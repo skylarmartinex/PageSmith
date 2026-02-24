@@ -11,6 +11,12 @@ interface EbookSection {
   title: string;
   content: string;
   imageKeywords: string[];
+  image?: {
+    url: string;
+    thumb: string;
+    alt: string;
+    attribution: string;
+  };
 }
 
 interface GeneratedContent {
@@ -54,7 +60,33 @@ export default function EditorPage() {
       }
 
       const data = await response.json();
-      setGeneratedContent(data);
+      
+      // Fetch images for each section
+      const sectionsWithImages = await Promise.all(
+        data.sections.map(async (section: EbookSection) => {
+          if (section.imageKeywords.length > 0) {
+            try {
+              const imageResponse = await fetch(
+                `/api/images?query=${encodeURIComponent(section.imageKeywords[0])}&count=1`
+              );
+              if (imageResponse.ok) {
+                const imageData = await imageResponse.json();
+                if (imageData.images && imageData.images.length > 0) {
+                  return {
+                    ...section,
+                    image: imageData.images[0],
+                  };
+                }
+              }
+            } catch (imgErr) {
+              console.error("Failed to fetch image:", imgErr);
+            }
+          }
+          return section;
+        })
+      );
+
+      setGeneratedContent({ ...data, sections: sectionsWithImages });
     } catch (err) {
       setError("Failed to generate content. Please try again.");
       console.error(err);

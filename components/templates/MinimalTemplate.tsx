@@ -49,8 +49,19 @@ export function MinimalTemplate({ content, config }: MinimalTemplateProps) {
             ))}
           </div>
 
-          {/* Image placeholder */}
-          {section.imageKeywords.length > 0 && (
+          {/* Image */}
+          {section.image ? (
+            <div className="mt-6">
+              <img
+                src={section.image.url}
+                alt={section.image.alt}
+                className="w-full rounded-lg"
+              />
+              <p className="text-xs mt-2 text-center" style={{ color: config.colors.secondary }}>
+                {section.image.attribution}
+              </p>
+            </div>
+          ) : section.imageKeywords.length > 0 && (
             <div
               className="mt-6 p-8 rounded-lg flex items-center justify-center"
               style={{

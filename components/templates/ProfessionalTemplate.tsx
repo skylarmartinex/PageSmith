@@ -71,8 +71,27 @@ export function ProfessionalTemplate({
               ))}
             </div>
 
-            {/* Image placeholder with border */}
-            {section.imageKeywords.length > 0 && (
+            {/* Image */}
+            {section.image ? (
+              <div className="ml-16 mt-6">
+                <div
+                  className="rounded-lg border-l-4 overflow-hidden"
+                  style={{
+                    borderLeftColor: config.colors.accent,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <img
+                    src={section.image.url}
+                    alt={section.image.alt}
+                    className="w-full"
+                  />
+                </div>
+                <p className="text-xs mt-2 ml-2" style={{ color: config.colors.secondary }}>
+                  {section.image.attribution}
+                </p>
+              </div>
+            ) : section.imageKeywords.length > 0 && (
               <div
                 className="ml-16 mt-6 p-8 rounded-lg border-l-4"
                 style={{

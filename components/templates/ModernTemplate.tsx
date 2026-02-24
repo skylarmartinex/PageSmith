@@ -96,8 +96,26 @@ export function ModernTemplate({ content, config }: ModernTemplateProps) {
                 ))}
               </div>
 
-              {/* Image placeholder with gradient border */}
-              {section.imageKeywords.length > 0 && (
+              {/* Image */}
+              {section.image ? (
+                <div className="mt-6">
+                  <div
+                    className="p-1 rounded-xl bg-gradient-to-r"
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${config.colors.primary}, ${config.colors.accent})`,
+                    }}
+                  >
+                    <img
+                      src={section.image.url}
+                      alt={section.image.alt}
+                      className="w-full rounded-lg"
+                    />
+                  </div>
+                  <p className="text-xs mt-2 text-center" style={{ color: config.colors.secondary }}>
+                    {section.image.attribution}
+                  </p>
+                </div>
+              ) : section.imageKeywords.length > 0 && (
                 <div className="mt-6 p-1 rounded-xl bg-gradient-to-r"
                   style={{
                     backgroundImage: `linear-gradient(135deg, ${config.colors.primary}, ${config.colors.accent})`,
