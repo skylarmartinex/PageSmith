@@ -11,22 +11,22 @@
 ## Core Features (Must-Have)
 
 ### Phase 1: Foundation (Week 1)
-- [ ] Next.js 14 setup with App Router
-- [ ] TypeScript + Tailwind CSS
-- [ ] Basic project structure
-- [ ] Environment variables setup (.env.local)
-- [ ] Claude API integration
-- [ ] API route for content generation
-- [ ] Basic UI (input form)
-- [ ] Content editor component
+- [x] Next.js 14 setup with App Router
+- [x] TypeScript + Tailwind CSS
+- [x] Basic project structure
+- [x] Environment variables setup (.env.local)
+- [x] Claude API integration
+- [x] API route for content generation
+- [x] Basic UI (input form)
+- [x] Content editor component
 
 ### Phase 2: AI Content Generation
-- [ ] Topic/outline input form
-- [ ] Claude generates full ebook content
-- [ ] Section-based content structure
+- [x] Topic/outline input form
+- [x] Claude generates full ebook content
+- [x] Section-based content structure
+- [x] AI suggests image keywords per section
 - [ ] Edit generated content (rich text editor)
 - [ ] Save/load drafts (local storage or DB)
-- [ ] AI suggests image keywords per section
 
 ### Phase 3: Template System
 - [ ] Template engine architecture
