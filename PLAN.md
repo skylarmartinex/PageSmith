@@ -52,10 +52,11 @@
 - [x] Pexels API integration (fallback)
 - [x] Image search by keyword
 - [x] Attribution footer (automatic)
-- [ ] Integrate images into ebook generation
-- [ ] Manual image upload
-- [ ] Image positioning controls
-- [ ] Image cropping/resizing
+- [x] Integrate images into ebook generation
+- [x] Auto-fetch images per section
+- [ ] Manual image upload (optional)
+- [ ] Image positioning controls (optional)
+- [ ] Image cropping/resizing (optional)
 
 ### Phase 6: Branding System
 - [ ] Brand color picker (primary, secondary, accent)
