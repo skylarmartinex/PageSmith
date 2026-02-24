@@ -29,11 +29,11 @@
 - [ ] Save/load drafts (local storage or DB)
 
 ### Phase 3: Template System
-- [ ] Template engine architecture
-- [ ] 3 basic templates (minimal, professional, modern)
-- [ ] Dynamic layout system (auto-adjusts as content changes)
-- [ ] Template preview mode
-- [ ] Template switcher (change template, keep content)
+- [x] Template engine architecture
+- [x] 3 basic templates (minimal, professional, modern)
+- [x] Dynamic layout system (auto-adjusts as content changes)
+- [x] Template preview mode
+- [ ] Template switcher (change template, keep content) - regenerates for now
 
 ### Phase 4: Design Elements
 - [ ] Icon library integration (Heroicons or Lucide)
