@@ -1,4 +1,6 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
+import { TableOfContents } from "@/components/sections/TableOfContents";
+import { SectionRenderer } from "@/components/sections/SectionRenderer";
 
 interface WarmTemplateProps {
     content: EbookContent;
@@ -21,17 +23,13 @@ export function WarmTemplate({ content, config }: WarmTemplateProps) {
                         <img src={config.logoUrl} alt="Brand logo" className="h-12 w-auto object-contain rounded-xl" />
                     </div>
                 )}
-                {/* Sun/circle accent */}
                 <div
                     className="w-20 h-20 rounded-full mx-auto mb-8 flex items-center justify-center text-3xl"
                     style={{ backgroundColor: config.colors.accent + "30" }}
                 >
                     🌿
                 </div>
-                <h1
-                    className="text-4xl font-bold leading-snug mb-4"
-                    style={{ color: config.colors.primary }}
-                >
+                <h1 className="text-4xl font-bold leading-snug mb-4" style={{ color: config.colors.primary }}>
                     {content.title}
                 </h1>
                 {content.subtitle && (
@@ -51,45 +49,11 @@ export function WarmTemplate({ content, config }: WarmTemplateProps) {
                 )}
             </div>
 
-            {/* Sections */}
-            <div className="px-12 py-10 space-y-14">
-                {content.sections.map((section, index) => (
-                    <div key={index}>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                                style={{ backgroundColor: config.colors.accent }}
-                            >
-                                {index + 1}
-                            </div>
-                            <h2
-                                className="text-2xl font-bold"
-                                style={{ color: config.colors.primary }}
-                            >
-                                {section.title}
-                            </h2>
-                        </div>
+            <TableOfContents content={content} config={config} />
 
-                        {section.image && (
-                            <div className="mb-6 rounded-2xl overflow-hidden">
-                                <img src={section.image.url} alt={section.image.alt} className="w-full" />
-                                <p className="text-xs text-center mt-2" style={{ color: config.colors.secondary }}>
-                                    {section.image.attribution}
-                                </p>
-                            </div>
-                        )}
-
-                        <div
-                            className="space-y-4 text-[17px] leading-[1.85] rounded-2xl p-6"
-                            style={{ backgroundColor: config.colors.primary + "08" }}
-                        >
-                            {section.content.split("\n").map((p, i) => (
-                                <p key={i}>{p}</p>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
+            {content.sections.map((section, index) => (
+                <SectionRenderer key={index} section={section} config={config} index={index} />
+            ))}
         </div>
     );
 }

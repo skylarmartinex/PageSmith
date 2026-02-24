@@ -1,4 +1,6 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
+import { TableOfContents } from "@/components/sections/TableOfContents";
+import { SectionRenderer } from "@/components/sections/SectionRenderer";
 
 interface BoldTemplateProps {
     content: EbookContent;
@@ -47,45 +49,11 @@ export function BoldTemplate({ content, config }: BoldTemplateProps) {
                 </div>
             </div>
 
-            {/* Sections */}
-            <div className="p-10 space-y-12">
-                {content.sections.map((section, index) => (
-                    <div key={index} className="border-l-4 pl-8" style={{ borderColor: config.colors.accent }}>
-                        <div className="flex items-baseline gap-4 mb-4">
-                            <span
-                                className="text-5xl font-black leading-none"
-                                style={{ color: config.colors.primary, opacity: 0.4 }}
-                            >
-                                {String(index + 1).padStart(2, "0")}
-                            </span>
-                            <h2
-                                className="text-3xl font-black uppercase tracking-tight"
-                                style={{ color: "#ffffff" }}
-                            >
-                                {section.title}
-                            </h2>
-                        </div>
+            <TableOfContents content={content} config={config} />
 
-                        <div className="space-y-4 text-lg leading-relaxed" style={{ color: "#b0b0b0" }}>
-                            {section.content.split("\n").map((p, i) => (
-                                <p key={i}>{p}</p>
-                            ))}
-                        </div>
-
-                        {section.image && (
-                            <div className="mt-6">
-                                <img
-                                    src={section.image.url}
-                                    alt={section.image.alt}
-                                    className="w-full rounded"
-                                    style={{ filter: "contrast(1.1) brightness(0.85)" }}
-                                />
-                                <p className="text-xs mt-2" style={{ color: "#666" }}>{section.image.attribution}</p>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
+            {content.sections.map((section, index) => (
+                <SectionRenderer key={index} section={section} config={config} index={index} />
+            ))}
         </div>
     );
 }

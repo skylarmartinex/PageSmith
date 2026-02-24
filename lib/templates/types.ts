@@ -1,13 +1,35 @@
+export type SectionLayout = "text-only" | "image-right" | "image-left" | "image-full" | "image-grid";
+
+export interface ImageAsset {
+  url: string;
+  thumb: string;
+  alt: string;
+  attribution: string;
+}
+
+export interface SectionCallout {
+  type: "tip" | "warning" | "insight";
+  text: string;
+}
+
+export interface SectionStat {
+  label: string;
+  value: string;
+}
+
 export interface EbookSection {
   title: string;
   content: string;
   imageKeywords: string[];
-  image?: {
-    url: string;
-    thumb: string;
-    alt: string;
-    attribution: string;
-  };
+  layoutType?: SectionLayout;
+  pullQuote?: string;
+  callout?: SectionCallout;
+  stats?: SectionStat[];
+  iconName?: string;
+  /** Legacy single image (kept for backward compat) */
+  image?: ImageAsset;
+  /** Multiple images (new) */
+  images?: ImageAsset[];
 }
 
 export interface EbookContent {

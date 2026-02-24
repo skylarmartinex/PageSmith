@@ -136,20 +136,27 @@ export default function EditorPage() {
 
       const sectionsWithImages = await Promise.all(
         data.sections.map(async (section: EbookSection) => {
-          if (section.imageKeywords.length > 0) {
-            try {
-              const imageResponse = await fetch(
-                `/api/images?query=${encodeURIComponent(section.imageKeywords[0])}&count=1`
-              );
-              if (imageResponse.ok) {
-                const imageData = await imageResponse.json();
-                if (imageData.images?.[0]) {
-                  return { ...section, image: imageData.images[0] };
-                }
-              }
-            } catch { }
-          }
-          return section;
+          if (!section.imageKeywords?.length) return section;
+
+          // Fetch up to 3 images (one per keyword)
+          const keywordsToFetch = section.imageKeywords.slice(0, 3);
+          const imageResults = await Promise.all(
+            keywordsToFetch.map(async (kw: string) => {
+              try {
+                const res = await fetch(`/api/images?query=${encodeURIComponent(kw)}&count=1`);
+                if (!res.ok) return null;
+                const data = await res.json();
+                return data.images?.[0] ?? null;
+              } catch { return null; }
+            })
+          );
+
+          const fetchedImages = imageResults.filter(Boolean);
+          return {
+            ...section,
+            images: fetchedImages,
+            image: fetchedImages[0] ?? undefined, // backward compat
+          };
         })
       );
 

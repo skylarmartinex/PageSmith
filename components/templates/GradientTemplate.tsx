@@ -1,4 +1,6 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
+import { TableOfContents } from "@/components/sections/TableOfContents";
+import { SectionRenderer } from "@/components/sections/SectionRenderer";
 
 interface GradientTemplateProps {
     content: EbookContent;
@@ -20,9 +22,7 @@ export function GradientTemplate({ content, config }: GradientTemplateProps) {
                         <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain opacity-90" />
                     </div>
                 )}
-                <h1 className="text-6xl font-black text-white mb-4 leading-tight">
-                    {content.title}
-                </h1>
+                <h1 className="text-6xl font-black text-white mb-4 leading-tight">{content.title}</h1>
                 {content.subtitle && (
                     <p className="text-white/80 text-xl italic mb-2">{content.subtitle}</p>
                 )}
@@ -31,54 +31,11 @@ export function GradientTemplate({ content, config }: GradientTemplateProps) {
                 </p>
             </div>
 
-            {/* Alternating gradient-accent sections */}
-            <div className="space-y-0">
-                {content.sections.map((section, index) => {
-                    const isAccent = index % 3 === 2;
-                    return (
-                        <div
-                            key={index}
-                            className="p-12"
-                            style={{
-                                background: isAccent ? grad : "transparent",
-                                color: isAccent ? "#ffffff" : config.colors.text,
-                            }}
-                        >
-                            <div className="max-w-2xl">
-                                {/* Section pill */}
-                                <div
-                                    className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4"
-                                    style={{
-                                        backgroundColor: isAccent ? "rgba(255,255,255,0.2)" : config.colors.primary + "18",
-                                        color: isAccent ? "#ffffff" : config.colors.primary,
-                                    }}
-                                >
-                                    Part {index + 1}
-                                </div>
-                                <h2
-                                    className="text-4xl font-black mb-6 leading-tight"
-                                    style={{ color: isAccent ? "#ffffff" : config.colors.primary }}
-                                >
-                                    {section.title}
-                                </h2>
-                                <div className="space-y-4 text-lg leading-relaxed">
-                                    {section.content.split("\n").map((p, i) => (
-                                        <p key={i} style={{ color: isAccent ? "rgba(255,255,255,0.85)" : config.colors.text }}>{p}</p>
-                                    ))}
-                                </div>
-                                {section.image && (
-                                    <div className="mt-8 rounded-2xl overflow-hidden shadow-xl">
-                                        <img src={section.image.url} alt={section.image.alt} className="w-full" />
-                                        <p className="text-xs mt-2 px-1" style={{ color: isAccent ? "rgba(255,255,255,0.6)" : config.colors.secondary }}>
-                                            {section.image.attribution}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+            <TableOfContents content={content} config={config} />
+
+            {content.sections.map((section, index) => (
+                <SectionRenderer key={index} section={section} config={config} index={index} />
+            ))}
         </div>
     );
 }

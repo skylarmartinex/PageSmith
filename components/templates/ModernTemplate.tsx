@@ -1,4 +1,6 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
+import { TableOfContents } from "@/components/sections/TableOfContents";
+import { SectionRenderer } from "@/components/sections/SectionRenderer";
 
 interface ModernTemplateProps {
   content: EbookContent;
@@ -8,26 +10,14 @@ interface ModernTemplateProps {
 export function ModernTemplate({ content, config }: ModernTemplateProps) {
   return (
     <div
-      className="max-w-5xl mx-auto min-h-screen"
-      style={{
-        backgroundColor: config.colors.background,
-        fontFamily: config.fontFamily,
-      }}
+      className="max-w-4xl mx-auto min-h-screen"
+      style={{ backgroundColor: config.colors.background, fontFamily: config.fontFamily }}
     >
-      {/* Modern cover with geometric elements */}
-      <div className="relative p-12 overflow-hidden">
-        {/* Geometric background shapes */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute top-0 right-0 w-64 h-64 rounded-full"
-            style={{ backgroundColor: config.colors.primary }}
-          />
-          <div
-            className="absolute bottom-0 left-0 w-48 h-48 rounded-full"
-            style={{ backgroundColor: config.colors.accent }}
-          />
-        </div>
-
+      {/* Cover */}
+      <div
+        className="p-12 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${config.colors.background} 0%, ${config.colors.primary}15 100%)` }}
+      >
         <div className="relative text-center py-20">
           {config.logoUrl && (
             <div className="mb-8 flex justify-center">
@@ -46,103 +36,24 @@ export function ModernTemplate({ content, config }: ModernTemplateProps) {
             {content.title}
           </h1>
           <div className="flex justify-center gap-2">
-            <div
-              className="w-16 h-2 rounded-full"
-              style={{ backgroundColor: config.colors.primary }}
-            />
-            <div
-              className="w-16 h-2 rounded-full"
-              style={{ backgroundColor: config.colors.accent }}
-            />
-            <div
-              className="w-16 h-2 rounded-full"
-              style={{ backgroundColor: config.colors.secondary }}
-            />
+            <div className="w-16 h-2 rounded-full" style={{ backgroundColor: config.colors.primary }} />
+            <div className="w-16 h-2 rounded-full" style={{ backgroundColor: config.colors.accent }} />
+            <div className="w-16 h-2 rounded-full" style={{ backgroundColor: config.colors.secondary }} />
           </div>
+          {content.subtitle && (
+            <p className="text-lg mt-4 italic" style={{ color: config.colors.secondary }}>{content.subtitle}</p>
+          )}
+          {content.author && (
+            <p className="text-sm mt-3 tracking-widest uppercase" style={{ color: config.colors.secondary }}>by {content.author}</p>
+          )}
         </div>
       </div>
 
-      {/* Content with alternating layouts */}
-      <div className="p-12">
-        {content.sections.map((section, index) => (
-          <div
-            key={index}
-            className={`mb-16 ${index % 2 === 0 ? "" : "ml-auto"}`}
-            style={{ maxWidth: "90%" }}
-          >
-            {/* Title with accent bar */}
-            <div className="flex items-center gap-4 mb-6">
-              <div
-                className="w-2 h-16 rounded-full"
-                style={{ backgroundColor: config.colors.accent }}
-              />
-              <h2
-                className="text-4xl font-bold"
-                style={{ color: config.colors.primary }}
-              >
-                {section.title}
-              </h2>
-            </div>
+      <TableOfContents content={content} config={config} />
 
-            {/* Content card */}
-            <div
-              className="p-8 rounded-2xl"
-              style={{
-                backgroundColor: "#ffffff",
-                boxShadow: `0 8px 32px ${config.colors.primary}20`,
-              }}
-            >
-              <div
-                className="space-y-4 text-lg leading-relaxed"
-                style={{ color: config.colors.text }}
-              >
-                {section.content.split("\n").map((paragraph, i) => (
-                  <p key={i}>{paragraph}</p>
-                ))}
-              </div>
-
-              {/* Image */}
-              {section.image ? (
-                <div className="mt-6">
-                  <div
-                    className="p-1 rounded-xl bg-gradient-to-r"
-                    style={{
-                      backgroundImage: `linear-gradient(135deg, ${config.colors.primary}, ${config.colors.accent})`,
-                    }}
-                  >
-                    <img
-                      src={section.image.url}
-                      alt={section.image.alt}
-                      className="w-full rounded-lg"
-                    />
-                  </div>
-                  <p className="text-xs mt-2 text-center" style={{ color: config.colors.secondary }}>
-                    {section.image.attribution}
-                  </p>
-                </div>
-              ) : section.imageKeywords.length > 0 && (
-                <div className="mt-6 p-1 rounded-xl bg-gradient-to-r"
-                  style={{
-                    backgroundImage: `linear-gradient(135deg, ${config.colors.primary}, ${config.colors.accent})`,
-                  }}
-                >
-                  <div
-                    className="p-6 rounded-lg"
-                    style={{ backgroundColor: config.colors.background }}
-                  >
-                    <span
-                      className="font-medium"
-                      style={{ color: config.colors.primary }}
-                    >
-                      🖼️ {section.imageKeywords.join(" • ")}
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      {content.sections.map((section, index) => (
+        <SectionRenderer key={index} section={section} config={config} index={index} />
+      ))}
     </div>
   );
 }
