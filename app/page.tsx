@@ -4,13 +4,13 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="max-w-2xl text-center space-y-6">
-        <h1 className="text-5xl font-bold">
+        <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100">
           PageSmith
         </h1>
-        <p className="text-xl text-gray-600 dark:text-gray-400">
+        <p className="text-xl text-gray-900 dark:text-gray-100">
           AI-Powered Ebook & Lead Magnet Generator
         </p>
-        <p className="text-lg">
+        <p className="text-lg text-gray-900 dark:text-gray-100">
           Create professional ebooks, lead magnets, and digital content with AI.
           <br />
           No design skills required.

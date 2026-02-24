@@ -153,8 +153,8 @@ export default function EditorPage() {
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">Create Your Ebook</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Create Your Ebook</h1>
+          <p className="text-gray-900 dark:text-gray-100 mt-2">
             Enter your topic or outline below and let AI generate your content
           </p>
         </header>
@@ -224,7 +224,7 @@ export default function EditorPage() {
           <div className="lg:col-span-2 border rounded-lg bg-white dark:bg-gray-900 overflow-auto" style={{ maxHeight: "calc(100vh - 200px)" }}>
             {!generatedContent && !loading && (
               <div className="p-12 text-center">
-                <p className="text-gray-500">
+                <p className="text-gray-900 dark:text-gray-100">
                   Your generated ebook will appear here with the selected template...
                 </p>
               </div>
@@ -233,7 +233,7 @@ export default function EditorPage() {
             {loading && (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                <p className="text-gray-600">Generating your ebook...</p>
+                <p className="text-gray-900 dark:text-gray-100">Generating your ebook...</p>
               </div>
             )}
 
