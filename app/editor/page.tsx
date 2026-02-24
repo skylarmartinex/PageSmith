@@ -14,6 +14,7 @@ import { BrandingPanel } from "@/components/ui/BrandingPanel";
 import { EditPanel } from "@/components/ui/EditPanel";
 import { SocialPanel } from "@/components/social/SocialPanel";
 import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib/templates/types";
+import { exportToPPTX } from "@/lib/export/pptx";
 
 const DRAFT_KEY = "pagesmith_draft";
 
@@ -51,7 +52,10 @@ export default function EditorPage() {
   const [error, setError] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("minimal");
   const [exporting, setExporting] = useState(false);
+  const [exportingPPTX, setExportingPPTX] = useState(false);
   const [brandConfig, setBrandConfig] = useState<BrandConfig>(DEFAULT_BRAND);
+  const [author, setAuthor] = useState("");
+  const [subtitle, setSubtitle] = useState("");
   const [hasDraft, setHasDraft] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState<number | null>(null);
   const [showEdit, setShowEdit] = useState(false);
@@ -149,7 +153,7 @@ export default function EditorPage() {
         })
       );
 
-      const result = { ...data, sections: sectionsWithImages };
+      const result = { ...data, sections: sectionsWithImages, subtitle: subtitle.trim() || undefined, author: author.trim() || undefined };
       setGeneratedContent(result);
       saveDraft(result);
     } catch (err) {
@@ -163,6 +167,23 @@ export default function EditorPage() {
   const handleContentChange = (updated: GeneratedContent) => {
     setGeneratedContent(updated);
     saveDraft(updated);
+  };
+
+  const handleExportPPTX = async () => {
+    if (!generatedContent) return;
+    setExportingPPTX(true);
+    try {
+      await exportToPPTX(
+        generatedContent,
+        effectiveConfig.colors,
+        effectiveConfig.fontFamily,
+        brandConfig.logoUrl || undefined
+      );
+    } catch (err) {
+      console.error("PPTX export failed:", err);
+    } finally {
+      setExportingPPTX(false);
+    }
   };
 
   const baseTemplateConfig = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
@@ -273,6 +294,31 @@ export default function EditorPage() {
               />
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium mb-1 text-gray-700">Subtitle <span className="text-gray-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  placeholder="Tagline or subtitle"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1 text-gray-700">Author <span className="text-gray-400">(optional)</span></label>
+                <input
+                  type="text"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  placeholder="Your name"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+
             <TemplateSelector
               selectedTemplate={selectedTemplate}
               onSelectTemplate={setSelectedTemplate}
@@ -319,6 +365,14 @@ export default function EditorPage() {
                   className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {exporting ? "Exporting..." : "📄 Export as PDF"}
+                </button>
+
+                <button
+                  onClick={handleExportPPTX}
+                  disabled={exportingPPTX}
+                  className="w-full px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exportingPPTX ? "Exporting..." : "📊 Export as PowerPoint"}
                 </button>
 
                 <SocialPanel

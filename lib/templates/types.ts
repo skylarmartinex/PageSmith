@@ -12,6 +12,8 @@ export interface EbookSection {
 
 export interface EbookContent {
   title: string;
+  subtitle?: string;
+  author?: string;
   sections: EbookSection[];
 }
 

@@ -39,12 +39,15 @@ export function TechTemplate({ content, config }: TechTemplateProps) {
                     <h1 className="text-4xl font-bold leading-tight" style={{ color: "#e8e8e8" }}>
                         # {content.title}
                     </h1>
+                    {content.subtitle && (
+                        <p className="mt-2 text-base italic" style={{ color: config.colors.accent }}>// {content.subtitle}</p>
+                    )}
                     <p className="mt-4 text-sm" style={{ color: "#555" }}>
                         {content.sections.length} sections · Estimated read time:{" "}
                         {Math.ceil(
                             content.sections.reduce((acc, s) => acc + s.content.split(" ").length, 0) / 200
                         )}{" "}
-                        min
+                        min{content.author ? ` · ${content.author}` : ""}
                     </p>
                 </div>
 

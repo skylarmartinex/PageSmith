@@ -30,10 +30,13 @@ export function ElegantTemplate({ content, config }: ElegantTemplateProps) {
                 <div className="flex items-center justify-center gap-4">
                     <div className="h-px w-16" style={{ backgroundColor: config.colors.accent }} />
                     <span className="text-sm tracking-[0.3em] uppercase" style={{ color: config.colors.secondary }}>
-                        A Complete Guide
+                        {content.subtitle || "A Complete Guide"}
                     </span>
                     <div className="h-px w-16" style={{ backgroundColor: config.colors.accent }} />
                 </div>
+                {content.author && (
+                    <p className="mt-4 text-sm italic" style={{ color: config.colors.secondary }}>by {content.author}</p>
+                )}
             </div>
 
             {/* Sections */}

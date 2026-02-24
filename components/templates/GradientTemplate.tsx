@@ -23,8 +23,11 @@ export function GradientTemplate({ content, config }: GradientTemplateProps) {
                 <h1 className="text-6xl font-black text-white mb-4 leading-tight">
                     {content.title}
                 </h1>
+                {content.subtitle && (
+                    <p className="text-white/80 text-xl italic mb-2">{content.subtitle}</p>
+                )}
                 <p className="text-white/70 text-lg font-medium tracking-wide uppercase">
-                    Complete Guide
+                    {content.author ? `by ${content.author}` : "Complete Guide"}
                 </p>
             </div>
 

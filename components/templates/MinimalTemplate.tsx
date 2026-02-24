@@ -28,11 +28,22 @@ export function MinimalTemplate({ content, config }: MinimalTemplateProps) {
         >
           {content.title}
         </h1>
+        {content.subtitle && (
+          <p className="text-xl mb-4 italic" style={{ color: config.colors.secondary }}>
+            {content.subtitle}
+          </p>
+        )}
         <div
           className="w-24 h-1 mx-auto"
           style={{ backgroundColor: config.colors.accent }}
         />
+        {content.author && (
+          <p className="mt-4 text-sm tracking-widest uppercase" style={{ color: config.colors.secondary }}>
+            by {content.author}
+          </p>
+        )}
       </div>
+
 
       {/* Sections */}
       {content.sections.map((section, index) => (

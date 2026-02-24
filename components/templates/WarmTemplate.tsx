@@ -34,7 +34,10 @@ export function WarmTemplate({ content, config }: WarmTemplateProps) {
                 >
                     {content.title}
                 </h1>
-                <div className="flex justify-center gap-2 mt-6">
+                {content.subtitle && (
+                    <p className="text-lg italic mb-2" style={{ color: config.colors.secondary }}>{content.subtitle}</p>
+                )}
+                <div className="flex justify-center gap-2 mt-4">
                     {[1, 2, 3].map((i) => (
                         <div
                             key={i}
@@ -43,6 +46,9 @@ export function WarmTemplate({ content, config }: WarmTemplateProps) {
                         />
                     ))}
                 </div>
+                {content.author && (
+                    <p className="mt-4 text-sm" style={{ color: config.colors.secondary }}>by {content.author}</p>
+                )}
             </div>
 
             {/* Sections */}

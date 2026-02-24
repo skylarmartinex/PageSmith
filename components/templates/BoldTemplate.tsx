@@ -35,11 +35,14 @@ export function BoldTemplate({ content, config }: BoldTemplateProps) {
                     >
                         {content.title}
                     </h1>
+                    {content.subtitle && (
+                        <p className="text-xl text-white/70 italic mb-4">{content.subtitle}</p>
+                    )}
                     <div
                         className="inline-block px-4 py-1 text-sm font-bold uppercase tracking-widest"
                         style={{ backgroundColor: config.colors.accent, color: "#ffffff" }}
                     >
-                        Essential Guide
+                        {content.author ? `by ${content.author}` : "Essential Guide"}
                     </div>
                 </div>
             </div>

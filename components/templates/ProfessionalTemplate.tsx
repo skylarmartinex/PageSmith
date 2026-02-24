@@ -42,6 +42,12 @@ export function ProfessionalTemplate({
           <h1 className="text-5xl font-bold text-white mb-4">
             {content.title}
           </h1>
+          {content.subtitle && (
+            <p className="text-xl text-white/80 italic mb-2">{content.subtitle}</p>
+          )}
+          {content.author && (
+            <p className="text-sm text-white/70 tracking-widest uppercase mt-4">by {content.author}</p>
+          )}
         </div>
       </div>
 
