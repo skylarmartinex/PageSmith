@@ -163,7 +163,7 @@ export default function EditorPage() {
           {/* Input Panel */}
           <div className="lg:col-span-1 space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
                 Topic
               </label>
               <input
@@ -171,13 +171,13 @@ export default function EditorPage() {
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="e.g., How to Start a Blog in 2026"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-gray-900 dark:text-gray-100">
                 Outline (Optional)
               </label>
               <textarea
@@ -185,7 +185,7 @@ export default function EditorPage() {
                 onChange={(e) => setOutline(e.target.value)}
                 placeholder="Enter your outline or main points..."
                 rows={12}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800"
                 disabled={loading}
               />
             </div>
