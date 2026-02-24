@@ -40,10 +40,13 @@
 
 ## 📝 Notes
 
-**2026-02-24 12:40 PST:**
+**2026-02-24 12:45 PST:**
 - Phase 1 complete - Next.js foundation is ready
 - App runs locally with `npm run dev`
 - Basic editor UI created with input/preview layout
+- ✅ DEPLOYED TO VERCEL: https://pagesmith-chi.vercel.app
+- Fixed TypeScript bug (React.Node → React.ReactNode)
+- Auto-deploys on every GitHub push
 - Ready for Claude API integration (Phase 2)
 
 **2026-02-24 12:00 PST:**
