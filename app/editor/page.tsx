@@ -31,6 +31,7 @@ export default function EditorPage() {
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [error, setError] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("minimal");
+  const [exporting, setExporting] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -96,6 +97,44 @@ export default function EditorPage() {
   };
 
   const templateConfig = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
+
+  const handleExportPDF = async () => {
+    if (!generatedContent) return;
+
+    setExporting(true);
+    try {
+      const response = await fetch("/api/export", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: generatedContent,
+          templateId: selectedTemplate,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to export PDF");
+      }
+
+      // Download the PDF
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${generatedContent.title.replace(/[^a-zA-Z0-9]/g, "_")}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      setError("Failed to export PDF. Please try again.");
+      console.error(err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const renderTemplate = () => {
     if (!generatedContent) return null;
@@ -169,6 +208,16 @@ export default function EditorPage() {
             >
               {loading ? "Generating..." : "Generate Content with AI"}
             </button>
+
+            {generatedContent && (
+              <button
+                onClick={handleExportPDF}
+                disabled={exporting}
+                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {exporting ? "Exporting..." : "📄 Export as PDF"}
+              </button>
+            )}
           </div>
 
           {/* Preview Panel */}
