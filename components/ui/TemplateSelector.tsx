@@ -11,7 +11,7 @@ export function TemplateSelector({
 }: TemplateSelectorProps) {
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-900 dark:text-white">Template</label>
+      <label className="block text-sm font-medium text-gray-900">Template</label>
       <div className="grid grid-cols-1 gap-3">
         {TEMPLATES.map((template) => (
           <button
@@ -19,14 +19,14 @@ export function TemplateSelector({
             onClick={() => onSelectTemplate(template.id)}
             className={`text-left p-4 rounded-lg border-2 transition-all ${
               selectedTemplate === template.id
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                : "border-gray-300 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-gray-800"
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400 bg-white"
             }`}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">{template.name}</h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
+                <h3 className="font-semibold mb-1 text-gray-900">{template.name}</h3>
+                <p className="text-sm text-gray-600">
                   {template.description}
                 </p>
               </div>
