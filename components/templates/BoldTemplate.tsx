@@ -9,17 +9,17 @@ interface BoldTemplateProps {
 
 export function BoldTemplate({ content, config }: BoldTemplateProps) {
     return (
-        <div
-            className="max-w-4xl mx-auto min-h-screen"
-            style={{ backgroundColor: "#0a0a0a", fontFamily: config.fontFamily }}
-        >
+        <div className="max-w-4xl mx-auto min-h-screen" style={{ backgroundColor: "#0a0a0a", fontFamily: config.fontFamily }}>
             {/* Cover */}
-            <div
-                className="p-12 py-24 text-center relative overflow-hidden"
-                style={{ backgroundColor: config.colors.primary }}
-            >
+            <div className="py-24 text-center relative overflow-hidden" style={{ backgroundColor: config.colors.primary, minHeight: "360px" }}>
+                {content.coverImage && (
+                    <>
+                        <img src={content.coverImage.url} alt={content.coverImage.alt} className="absolute inset-0 w-full h-full object-cover" style={{ filter: "brightness(0.18) contrast(1.3)" }} />
+                        <div className="absolute inset-0" style={{ backgroundColor: config.colors.primary + "cc" }} />
+                    </>
+                )}
                 {config.logoUrl && (
-                    <div className="mb-8 flex justify-center">
+                    <div className="relative mb-8 flex justify-center">
                         <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain opacity-90" />
                     </div>
                 )}
@@ -30,20 +30,12 @@ export function BoldTemplate({ content, config }: BoldTemplateProps) {
                         backgroundSize: "12px 12px",
                     }}
                 />
-                <div className="relative">
-                    <h1
-                        className="text-7xl font-black uppercase tracking-tighter leading-none mb-6"
-                        style={{ color: "#ffffff" }}
-                    >
+                <div className="relative px-12">
+                    <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-6" style={{ color: "#ffffff" }}>
                         {content.title}
                     </h1>
-                    {content.subtitle && (
-                        <p className="text-xl text-white/70 italic mb-4">{content.subtitle}</p>
-                    )}
-                    <div
-                        className="inline-block px-4 py-1 text-sm font-bold uppercase tracking-widest"
-                        style={{ backgroundColor: config.colors.accent, color: "#ffffff" }}
-                    >
+                    {content.subtitle && <p className="text-xl text-white/70 italic mb-4">{content.subtitle}</p>}
+                    <div className="inline-block px-4 py-1 text-sm font-bold uppercase tracking-widest" style={{ backgroundColor: config.colors.accent, color: "#ffffff" }}>
                         {content.author ? `by ${content.author}` : "Essential Guide"}
                     </div>
                 </div>

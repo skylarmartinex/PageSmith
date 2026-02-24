@@ -1,4 +1,4 @@
-export type SectionLayout = "text-only" | "image-right" | "image-left" | "image-full" | "image-grid";
+export type SectionLayout = "text-only" | "image-right" | "image-left" | "image-full" | "image-grid" | "image-overlay";
 
 export interface ImageAsset {
   url: string;
@@ -36,6 +36,7 @@ export interface EbookContent {
   title: string;
   subtitle?: string;
   author?: string;
+  coverImage?: ImageAsset;
   sections: EbookSection[];
 }
 

@@ -160,7 +160,24 @@ export default function EditorPage() {
         })
       );
 
-      const result = { ...data, sections: sectionsWithImages, subtitle: subtitle.trim() || undefined, author: author.trim() || undefined };
+      // Fetch cover image
+      let coverImage = undefined;
+      const coverKeyword = data.coverImageKeyword || topic;
+      try {
+        const coverRes = await fetch(`/api/images?query=${encodeURIComponent(coverKeyword)}&count=1`);
+        if (coverRes.ok) {
+          const coverData = await coverRes.json();
+          coverImage = coverData.images?.[0] ?? undefined;
+        }
+      } catch { }
+
+      const result = {
+        ...data,
+        sections: sectionsWithImages,
+        subtitle: subtitle.trim() || undefined,
+        author: author.trim() || undefined,
+        coverImage,
+      };
       setGeneratedContent(result);
       saveDraft(result);
     } catch (err) {

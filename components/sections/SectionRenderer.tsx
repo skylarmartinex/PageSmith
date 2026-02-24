@@ -11,7 +11,8 @@ interface SectionRendererProps {
 // Safely resolve a Lucide icon by name
 function SectionIcon({ name, color }: { name?: string; color: string }) {
     if (!name) return null;
-    const Icon = (LucideIcons as Record<string, React.ComponentType<LucideProps>>)[name];
+    const icons = LucideIcons as unknown as Record<string, React.ComponentType<LucideProps>>;
+    const Icon = icons[name];
     if (!Icon) return null;
     return <Icon size={20} color={color} strokeWidth={2} />;
 }
@@ -173,6 +174,75 @@ export function SectionRenderer({ section, config, index }: SectionRendererProps
                 {SectionHeading}
                 {BodyText}
                 {ExtraBlocks}
+            </div>
+        );
+    }
+
+    // IMAGE OVERLAY (text over full-bleed darkened photo — magazine style)
+    if (layout === "image-overlay") {
+        return (
+            <div className="mb-12 relative overflow-hidden" style={{ minHeight: "420px" }}>
+                {/* Background image */}
+                <img
+                    src={images[0].url}
+                    alt={images[0].alt}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ filter: "brightness(0.35) saturate(1.2)" }}
+                />
+                {/* Gradient overlay for readability */}
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        background: `linear-gradient(135deg, ${config.colors.primary}99 0%, rgba(0,0,0,0.5) 100%)`,
+                    }}
+                />
+                {/* Content on top */}
+                <div className="relative px-10 py-14">
+                    {/* Icon + title */}
+                    <div className="flex items-center gap-3 mb-5">
+                        {section.iconName && (
+                            <div
+                                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                                style={{ backgroundColor: config.colors.accent + "40", backdropFilter: "blur(8px)" }}
+                            >
+                                <SectionIcon name={section.iconName} color={config.colors.accent} />
+                            </div>
+                        )}
+                        <h2 className="text-3xl font-black leading-tight text-white">
+                            {section.title}
+                        </h2>
+                    </div>
+
+                    {/* Pull quote prominent */}
+                    {section.pullQuote && (
+                        <p
+                            className="text-xl italic font-medium mb-6 leading-relaxed"
+                            style={{ color: config.colors.accent }}
+                        >
+                            &ldquo;{section.pullQuote}&rdquo;
+                        </p>
+                    )}
+
+                    {/* Body in 2 columns for wider feel */}
+                    <div className="grid grid-cols-2 gap-8 text-white/85 text-[15px] leading-relaxed">
+                        {section.content.split("\n\n").map((para, i) => (
+                            <p key={i}>{para}</p>
+                        ))}
+                    </div>
+
+                    {/* Stats row */}
+                    {section.stats && section.stats.length > 0 && (
+                        <div className="flex gap-6 mt-8">
+                            {section.stats.map((stat, i) => (
+                                <div key={i} className="text-center">
+                                    <p className="text-3xl font-black" style={{ color: config.colors.accent }}>{stat.value}</p>
+                                    <p className="text-xs text-white/70 uppercase tracking-wider mt-1">{stat.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                <p className="relative text-xs text-white/30 px-10 pb-3">{images[0].attribution}</p>
             </div>
         );
     }

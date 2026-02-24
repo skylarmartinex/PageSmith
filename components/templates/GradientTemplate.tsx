@@ -16,19 +16,23 @@ export function GradientTemplate({ content, config }: GradientTemplateProps) {
             style={{ backgroundColor: config.colors.background, fontFamily: config.fontFamily }}
         >
             {/* Full-bleed gradient cover */}
-            <div className="p-12 py-28 text-center" style={{ background: grad }}>
-                {config.logoUrl && (
-                    <div className="mb-8 flex justify-center">
-                        <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain opacity-90" />
-                    </div>
+            <div className="relative overflow-hidden py-28 text-center" style={{ minHeight: "380px" }}>
+                {content.coverImage && (
+                    <img src={content.coverImage.url} alt={content.coverImage.alt} className="absolute inset-0 w-full h-full object-cover" style={{ filter: "brightness(0.25)" }} />
                 )}
-                <h1 className="text-6xl font-black text-white mb-4 leading-tight">{content.title}</h1>
-                {content.subtitle && (
-                    <p className="text-white/80 text-xl italic mb-2">{content.subtitle}</p>
-                )}
-                <p className="text-white/70 text-lg font-medium tracking-wide uppercase">
-                    {content.author ? `by ${content.author}` : "Complete Guide"}
-                </p>
+                <div className="absolute inset-0" style={{ background: content.coverImage ? `${grad}dd` : grad }} />
+                <div className="relative px-12">
+                    {config.logoUrl && (
+                        <div className="mb-8 flex justify-center">
+                            <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain opacity-90" />
+                        </div>
+                    )}
+                    <h1 className="text-6xl font-black text-white mb-4 leading-tight">{content.title}</h1>
+                    {content.subtitle && <p className="text-white/80 text-xl italic mb-2">{content.subtitle}</p>}
+                    <p className="text-white/70 text-lg font-medium tracking-wide uppercase">
+                        {content.author ? `by ${content.author}` : "Complete Guide"}
+                    </p>
+                </div>
             </div>
 
             <TableOfContents content={content} config={config} />

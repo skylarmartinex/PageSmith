@@ -15,7 +15,7 @@ export async function generateEbookContent(
 ) {
   const { topic, outline, sections = 5 } = request;
 
-  const layoutTypes = ["text-only", "image-right", "image-left", "image-full", "image-grid"];
+  const layoutTypes = ["text-only", "image-right", "image-left", "image-full", "image-grid", "image-overlay"];
   const lucideIcons = [
     "Lightbulb", "Zap", "Target", "TrendingUp", "BookOpen", "Star",
     "Globe", "Shield", "Rocket", "Users", "Heart", "Brain",
@@ -43,6 +43,7 @@ Return ONLY this JSON structure (no markdown):
 {
   "title": "Ebook title",
   "subtitle": "Compelling subtitle in 8 words or less",
+  "coverImageKeyword": "A single vivid keyword for the cover hero image (e.g. 'golf swing', 'mountain sunrise', 'startup team')",
   "sections": [
     {
       "title": "Section title",
@@ -68,7 +69,8 @@ Rules:
 - callout.type: "tip" for best practices, "warning" for pitfalls, "insight" for aha moments; omit if nothing meaningful to add
 - pullQuote: always include — make it quotable and punchy
 - imageKeywords: always 3 distinct, specific keywords
-- layoutType: vary across sections, avoid repeating the same layout consecutively`;
+- layoutType: vary across sections; use "image-overlay" for 1-2 high-drama sections where a powerful image with text on top creates impact; never use it for the first or last section
+- coverImageKeyword: single highly visual keyword that represents the ebook topic perfectly`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
