@@ -48,13 +48,14 @@
 - [ ] Charts/graphs for data visualization
 
 ### Phase 5: Image Handling
-- [ ] Unsplash API integration
-- [ ] Pexels API integration (fallback)
-- [ ] Image search by keyword
+- [x] Unsplash API integration
+- [x] Pexels API integration (fallback)
+- [x] Image search by keyword
+- [x] Attribution footer (automatic)
+- [ ] Integrate images into ebook generation
 - [ ] Manual image upload
 - [ ] Image positioning controls
 - [ ] Image cropping/resizing
-- [ ] Attribution footer (automatic)
 
 ### Phase 6: Branding System
 - [ ] Brand color picker (primary, secondary, accent)

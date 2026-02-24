@@ -53,10 +53,19 @@
 - [ ] Background patterns/textures (Next)
 - [ ] Color overlays on images (Next)
 
+### Phase 5: Image Handling
+- [x] Unsplash API integration
+- [x] Pexels API integration (fallback)
+- [x] Image search API route
+- [x] Attribution handling
+- [ ] Add API keys to production (needs Unsplash + Pexels accounts)
+- [ ] Integrate images into templates (Next)
+- [ ] Image positioning controls (Next)
+
 ## 🚧 In Progress
 
-### Phase 5: Image Handling (Next)
-- [ ] Unsplash API integration
+### Phase 6: Branding System (Next)
+- [ ] Brand color picker
 
 ---
 
@@ -67,6 +76,13 @@
 ---
 
 ## 📝 Notes
+
+**2026-02-24 13:35 PST:**
+- 🖼️ Phase 5 (Image Handling) - API integration complete!
+- Unsplash API (50 req/hour) + Pexels fallback (200 req/hour)
+- Image search endpoint ready: `/api/images?query=...`
+- Automatic attribution handling
+- Needs API keys for production deployment
 
 **2026-02-24 13:25 PST:**
 - 🎨 Phase 4 (Design Elements) - Components created!
