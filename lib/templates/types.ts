@@ -2,6 +2,12 @@ export interface EbookSection {
   title: string;
   content: string;
   imageKeywords: string[];
+  image?: {
+    url: string;
+    thumb: string;
+    alt: string;
+    attribution: string;
+  };
 }
 
 export interface EbookContent {

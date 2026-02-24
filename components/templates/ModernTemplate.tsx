@@ -1,19 +1,7 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
 
-interface EbookSection {
-  title: string;
-  content: string;
-  imageKeywords: string[];
-  image?: {
-    url: string;
-    thumb: string;
-    alt: string;
-    attribution: string;
-  };
-}
-
 interface ModernTemplateProps {
-  content: EbookContent & { sections: EbookSection[] };
+  content: EbookContent;
   config: TemplateConfig;
 }
 
