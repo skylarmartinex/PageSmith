@@ -1,7 +1,19 @@
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
 
+interface EbookSection {
+  title: string;
+  content: string;
+  imageKeywords: string[];
+  image?: {
+    url: string;
+    thumb: string;
+    alt: string;
+    attribution: string;
+  };
+}
+
 interface MinimalTemplateProps {
-  content: EbookContent;
+  content: EbookContent & { sections: EbookSection[] };
   config: TemplateConfig;
 }
 
