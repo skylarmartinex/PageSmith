@@ -67,14 +67,17 @@
 - [ ] Brand consistency enforcement
 
 ### Phase 7: PDF Export
-- [ ] Puppeteer setup
-- [ ] Template → HTML conversion
-- [ ] CSS for print/PDF
-- [ ] Multi-column layouts
-- [ ] Headers/footers with page numbers
-- [ ] Table of contents generation
-- [ ] Cover page design
-- [ ] PDF optimization (file size)
+- [x] Puppeteer setup
+- [x] Template → HTML conversion
+- [x] CSS for print/PDF
+- [x] PDF generation API
+- [x] Export button in editor
+- [x] Automatic file download
+- [x] Cover page design (all templates)
+- [ ] Multi-column layouts (optional)
+- [ ] Headers/footers with page numbers (optional)
+- [ ] Table of contents generation (optional)
+- [ ] PDF optimization (file size) (optional)
 
 ### Phase 8: Multi-Format Export
 - [ ] PNG export (individual pages)
