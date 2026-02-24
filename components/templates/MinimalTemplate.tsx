@@ -17,6 +17,11 @@ export function MinimalTemplate({ content, config }: MinimalTemplateProps) {
     >
       {/* Cover */}
       <div className="mb-16 text-center py-20">
+        {config.logoUrl && (
+          <div className="mb-8 flex justify-center">
+            <img src={config.logoUrl} alt="Brand logo" className="h-16 w-auto object-contain" />
+          </div>
+        )}
         <h1
           className="text-5xl font-bold mb-4"
           style={{ color: config.colors.primary }}

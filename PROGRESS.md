@@ -75,12 +75,17 @@
 - [x] Images included in PDF
 - [x] Attribution preserved in PDF
 
-## 🚧 In Progress
+### Phase 6: Branding System ✅ COMPLETE
+- [x] Brand color picker (primary, secondary, accent, background, text)
+- [x] Google Fonts integration (8 curated fonts, lazy-loaded on selection)
+- [x] Logo upload (PNG, JPG, SVG → base64, rendered on ebook cover)
+- [x] Save brand presets (named, persisted to localStorage)
+- [x] Load / delete presets
+- [x] Reset to template defaults
+- [x] Apply brand consistently across Minimal, Professional, Modern templates
+- [x] Brand persists across page reloads (active brand saved to localStorage)
+- [x] Brand config passed to PDF export API
 
-### Phase 6: Branding System (Optional - Skipped for MVP)
-- [ ] Brand color picker
-
----
 
 ## 🔴 Blockers
 

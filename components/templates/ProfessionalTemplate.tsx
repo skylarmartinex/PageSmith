@@ -25,6 +25,11 @@ export function ProfessionalTemplate({
         }}
       >
         <div className="text-center py-16">
+          {config.logoUrl && (
+            <div className="mb-6 flex justify-center">
+              <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain opacity-90" />
+            </div>
+          )}
           <div
             className="inline-block px-6 py-2 rounded-full mb-6"
             style={{

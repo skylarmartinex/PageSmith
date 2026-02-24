@@ -29,6 +29,11 @@ export function ModernTemplate({ content, config }: ModernTemplateProps) {
         </div>
 
         <div className="relative text-center py-20">
+          {config.logoUrl && (
+            <div className="mb-8 flex justify-center">
+              <img src={config.logoUrl} alt="Brand logo" className="h-14 w-auto object-contain" />
+            </div>
+          )}
           <h1
             className="text-6xl font-black mb-6 tracking-tight"
             style={{

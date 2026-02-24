@@ -4,8 +4,15 @@ import { useState } from "react";
 import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
 import { ProfessionalTemplate } from "@/components/templates/ProfessionalTemplate";
 import { ModernTemplate } from "@/components/templates/ModernTemplate";
+import { BoldTemplate } from "@/components/templates/BoldTemplate";
+import { ElegantTemplate } from "@/components/templates/ElegantTemplate";
+import { GradientTemplate } from "@/components/templates/GradientTemplate";
+import { TechTemplate } from "@/components/templates/TechTemplate";
+import { WarmTemplate } from "@/components/templates/WarmTemplate";
 import { TemplateSelector } from "@/components/ui/TemplateSelector";
-import { TEMPLATES } from "@/lib/templates/types";
+import { BrandingPanel } from "@/components/ui/BrandingPanel";
+import { SocialPanel } from "@/components/social/SocialPanel";
+import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib/templates/types";
 
 interface EbookSection {
   title: string;
@@ -32,6 +39,7 @@ export default function EditorPage() {
   const [error, setError] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("minimal");
   const [exporting, setExporting] = useState(false);
+  const [brandConfig, setBrandConfig] = useState<BrandConfig>(DEFAULT_BRAND);
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -46,9 +54,7 @@ export default function EditorPage() {
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           topic: topic.trim(),
           outline: outline.trim() || undefined,
@@ -56,12 +62,10 @@ export default function EditorPage() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate content");
-      }
+      if (!response.ok) throw new Error("Failed to generate content");
 
       const data = await response.json();
-      
+
       // Fetch images for each section
       const sectionsWithImages = await Promise.all(
         data.sections.map(async (section: EbookSection) => {
@@ -72,11 +76,8 @@ export default function EditorPage() {
               );
               if (imageResponse.ok) {
                 const imageData = await imageResponse.json();
-                if (imageData.images && imageData.images.length > 0) {
-                  return {
-                    ...section,
-                    image: imageData.images[0],
-                  };
+                if (imageData.images?.[0]) {
+                  return { ...section, image: imageData.images[0] };
                 }
               }
             } catch (imgErr) {
@@ -96,7 +97,9 @@ export default function EditorPage() {
     }
   };
 
-  const templateConfig = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
+  // Merge brand overrides onto template defaults
+  const baseTemplateConfig = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
+  const effectiveConfig = applyBrandToConfig(baseTemplateConfig, brandConfig);
 
   const handleExportPDF = async () => {
     if (!generatedContent) return;
@@ -105,20 +108,16 @@ export default function EditorPage() {
     try {
       const response = await fetch("/api/export", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: generatedContent,
           templateId: selectedTemplate,
+          brandConfig,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to export PDF");
-      }
+      if (!response.ok) throw new Error("Failed to export PDF");
 
-      // Download the PDF
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -141,11 +140,21 @@ export default function EditorPage() {
 
     switch (selectedTemplate) {
       case "professional":
-        return <ProfessionalTemplate content={generatedContent} config={templateConfig} />;
+        return <ProfessionalTemplate content={generatedContent} config={effectiveConfig} />;
       case "modern":
-        return <ModernTemplate content={generatedContent} config={templateConfig} />;
+        return <ModernTemplate content={generatedContent} config={effectiveConfig} />;
+      case "bold":
+        return <BoldTemplate content={generatedContent} config={effectiveConfig} />;
+      case "elegant":
+        return <ElegantTemplate content={generatedContent} config={effectiveConfig} />;
+      case "gradient":
+        return <GradientTemplate content={generatedContent} config={effectiveConfig} />;
+      case "tech":
+        return <TechTemplate content={generatedContent} config={effectiveConfig} />;
+      case "warm":
+        return <WarmTemplate content={generatedContent} config={effectiveConfig} />;
       default:
-        return <MinimalTemplate content={generatedContent} config={templateConfig} />;
+        return <MinimalTemplate content={generatedContent} config={effectiveConfig} />;
     }
   };
 
@@ -163,9 +172,7 @@ export default function EditorPage() {
           {/* Input Panel */}
           <div className="lg:col-span-1 space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-900">
-                Topic
-              </label>
+              <label className="block text-sm font-medium mb-2 text-gray-900">Topic</label>
               <input
                 type="text"
                 value={topic}
@@ -184,7 +191,7 @@ export default function EditorPage() {
                 value={outline}
                 onChange={(e) => setOutline(e.target.value)}
                 placeholder="Enter your outline or main points..."
-                rows={12}
+                rows={5}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 bg-white"
                 disabled={loading}
               />
@@ -193,6 +200,13 @@ export default function EditorPage() {
             <TemplateSelector
               selectedTemplate={selectedTemplate}
               onSelectTemplate={setSelectedTemplate}
+            />
+
+            <BrandingPanel
+              brand={brandConfig}
+              onChange={setBrandConfig}
+              topic={topic}
+              selectedTemplate={selectedTemplate}
             />
 
             {error && (
@@ -210,18 +224,29 @@ export default function EditorPage() {
             </button>
 
             {generatedContent && (
-              <button
-                onClick={handleExportPDF}
-                disabled={exporting}
-                className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {exporting ? "Exporting..." : "📄 Export as PDF"}
-              </button>
+              <>
+                <button
+                  onClick={handleExportPDF}
+                  disabled={exporting}
+                  className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {exporting ? "Exporting..." : "📄 Export as PDF"}
+                </button>
+
+                <SocialPanel
+                  title={generatedContent.title}
+                  sections={generatedContent.sections}
+                  brand={brandConfig}
+                />
+              </>
             )}
           </div>
 
           {/* Preview Panel */}
-          <div className="lg:col-span-2 border border-gray-300 rounded-lg bg-white overflow-auto" style={{ maxHeight: "calc(100vh - 200px)" }}>
+          <div
+            className="lg:col-span-2 border border-gray-300 rounded-lg bg-white overflow-auto"
+            style={{ maxHeight: "calc(100vh - 200px)" }}
+          >
             {!generatedContent && !loading && (
               <div className="p-12 text-center">
                 <p className="text-gray-600">
@@ -232,15 +257,13 @@ export default function EditorPage() {
 
             {loading && (
               <div className="flex flex-col items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4" />
                 <p className="text-gray-900">Generating your ebook...</p>
               </div>
             )}
 
             {generatedContent && (
-              <div className="bg-gray-100 dark:bg-gray-800">
-                {renderTemplate()}
-              </div>
+              <div className="bg-gray-100">{renderTemplate()}</div>
             )}
           </div>
         </div>
