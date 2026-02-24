@@ -15,6 +15,7 @@ import { EditPanel } from "@/components/ui/EditPanel";
 import { SocialPanel } from "@/components/social/SocialPanel";
 import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib/templates/types";
 import { exportToPPTX } from "@/lib/export/pptx";
+import { ShareModal } from "@/components/ui/ShareModal";
 
 const DRAFT_KEY = "pagesmith_draft";
 
@@ -59,6 +60,8 @@ export default function EditorPage() {
   const [hasDraft, setHasDraft] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState<number | null>(null);
   const [showEdit, setShowEdit] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   // Check for saved draft on mount
   useEffect(() => {
@@ -207,6 +210,30 @@ export default function EditorPage() {
       console.error("PPTX export failed:", err);
     } finally {
       setExportingPPTX(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!generatedContent) return;
+    setSharing(true);
+    try {
+      const res = await fetch("/api/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: generatedContent,
+          templateId: selectedTemplate,
+          brandConfig,
+        }),
+      });
+      if (!res.ok) throw new Error("Share failed");
+      const { url } = await res.json();
+      setShareUrl(url);
+    } catch (err) {
+      console.error("Share error:", err);
+      alert("Failed to generate share link. Make sure UPSTASH env vars are configured.");
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -399,6 +426,15 @@ export default function EditorPage() {
                   {exportingPPTX ? "Exporting..." : "📊 Export as PowerPoint"}
                 </button>
 
+                <button
+                  onClick={handleShare}
+                  disabled={sharing}
+                  className="w-full px-6 py-3 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: sharing ? "#9ca3af" : "linear-gradient(135deg, #7c3aed, #2563eb)" }}
+                >
+                  {sharing ? "Creating link..." : "🔗 Share Ebook"}
+                </button>
+
                 <SocialPanel
                   title={generatedContent.title}
                   sections={generatedContent.sections}
@@ -407,6 +443,8 @@ export default function EditorPage() {
               </>
             )}
           </div>
+
+          {shareUrl && <ShareModal url={shareUrl} onClose={() => setShareUrl(null)} />}
 
           {/* Preview Panel */}
           <div
