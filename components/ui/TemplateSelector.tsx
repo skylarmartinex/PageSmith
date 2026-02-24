@@ -11,7 +11,7 @@ export function TemplateSelector({
 }: TemplateSelectorProps) {
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-900 dark:text-gray-100">Template</label>
+      <label className="block text-sm font-medium text-gray-900 dark:text-white">Template</label>
       <div className="grid grid-cols-1 gap-3">
         {TEMPLATES.map((template) => (
           <button
@@ -25,7 +25,7 @@ export function TemplateSelector({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <h3 className="font-semibold mb-1 text-gray-900 dark:text-gray-100">{template.name}</h3>
+                <h3 className="font-semibold mb-1 text-gray-900 dark:text-white">{template.name}</h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   {template.description}
                 </p>
