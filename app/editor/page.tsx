@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
+import { ProfessionalTemplate } from "@/components/templates/ProfessionalTemplate";
+import { ModernTemplate } from "@/components/templates/ModernTemplate";
+import { TemplateSelector } from "@/components/ui/TemplateSelector";
+import { TEMPLATES } from "@/lib/templates/types";
 
 interface EbookSection {
   title: string;
@@ -19,6 +24,7 @@ export default function EditorPage() {
   const [loading, setLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [error, setError] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState("minimal");
 
   const handleGenerate = async () => {
     if (!topic.trim()) {
@@ -57,9 +63,24 @@ export default function EditorPage() {
     }
   };
 
+  const templateConfig = TEMPLATES.find((t) => t.id === selectedTemplate) || TEMPLATES[0];
+
+  const renderTemplate = () => {
+    if (!generatedContent) return null;
+
+    switch (selectedTemplate) {
+      case "professional":
+        return <ProfessionalTemplate content={generatedContent} config={templateConfig} />;
+      case "modern":
+        return <ModernTemplate content={generatedContent} config={templateConfig} />;
+      default:
+        return <MinimalTemplate content={generatedContent} config={templateConfig} />;
+    }
+  };
+
   return (
     <div className="min-h-screen p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Create Your Ebook</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -67,9 +88,9 @@ export default function EditorPage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Input Panel */}
-          <div className="space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2">
                 Topic
@@ -98,6 +119,11 @@ export default function EditorPage() {
               />
             </div>
 
+            <TemplateSelector
+              selectedTemplate={selectedTemplate}
+              onSelectTemplate={setSelectedTemplate}
+            />
+
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
                 {error}
@@ -114,43 +140,25 @@ export default function EditorPage() {
           </div>
 
           {/* Preview Panel */}
-          <div className="border rounded-lg p-6 bg-gray-50 dark:bg-gray-900 overflow-auto max-h-[600px]">
-            <h2 className="text-xl font-semibold mb-4">Preview</h2>
-            
+          <div className="lg:col-span-2 border rounded-lg bg-white dark:bg-gray-900 overflow-auto" style={{ maxHeight: "calc(100vh - 200px)" }}>
             {!generatedContent && !loading && (
-              <p className="text-gray-500">
-                Your generated content will appear here...
-              </p>
+              <div className="p-12 text-center">
+                <p className="text-gray-500">
+                  Your generated ebook will appear here with the selected template...
+                </p>
+              </div>
             )}
 
             {loading && (
-              <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-gray-600">Generating your ebook...</p>
               </div>
             )}
 
             {generatedContent && (
-              <div className="space-y-6">
-                <h3 className="text-2xl font-bold">{generatedContent.title}</h3>
-                
-                {generatedContent.sections.map((section, index) => (
-                  <div key={index} className="border-t pt-4">
-                    <h4 className="text-lg font-semibold mb-2">{section.title}</h4>
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                      {section.content}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {section.imageKeywords.map((keyword, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded"
-                        >
-                          🖼️ {keyword}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+              <div className="bg-gray-100 dark:bg-gray-800">
+                {renderTemplate()}
               </div>
             )}
           </div>
