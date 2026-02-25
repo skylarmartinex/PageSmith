@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
 import { ProfessionalTemplate } from "@/components/templates/ProfessionalTemplate";
@@ -47,7 +47,7 @@ interface Draft {
   savedAt: number;
 }
 
-export default function EditorPage() {
+function EditorPageInner() {
   const searchParams = useSearchParams();
   const projectIdFromUrl = searchParams.get("project");
 
@@ -684,3 +684,16 @@ export default function EditorPage() {
     </div>
   );
 }
+
+export default function EditorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400">Loading editor...</p>
+      </div>
+    }>
+      <EditorPageInner />
+    </Suspense>
+  );
+}
+

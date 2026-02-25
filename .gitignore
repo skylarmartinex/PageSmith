@@ -50,3 +50,4 @@ tmp/
 # Generated PDFs (optional - uncomment if you want to ignore generated files)
 # public/generated/
 # exports/
+.env*.local
