@@ -1,18 +1,23 @@
-import { ChartData, DiagramData, TemplateConfig } from "@/lib/templates/types";
+import { ChartData, DiagramData, ComparisonTableData, TemplateConfig } from "@/lib/templates/types";
 import { BarChart } from "./BarChart";
 import { LineChart } from "./LineChart";
 import { PieChart } from "./PieChart";
 import { ProgressChart } from "./ProgressChart";
 import { ProcessFlow } from "@/components/diagrams/ProcessFlow";
 import { Timeline } from "@/components/diagrams/Timeline";
+import { ComparisonTable } from "./ComparisonTable";
 
 interface VizRendererProps {
     chart?: ChartData;
     diagram?: DiagramData;
+    comparisonTable?: ComparisonTableData;
     config: TemplateConfig;
 }
 
-export function VizRenderer({ chart, diagram, config }: VizRendererProps) {
+export function VizRenderer({ chart, diagram, comparisonTable, config }: VizRendererProps) {
+    if (comparisonTable) {
+        return <ComparisonTable table={comparisonTable} config={config} />;
+    }
     if (chart) {
         switch (chart.type) {
             case "bar":

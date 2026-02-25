@@ -108,7 +108,9 @@ Rules:
 - chart: include on 1-3 sections where data comparisons, trends, distributions, or percentages add value. Types: "bar" (comparisons), "line" (trends over time), "pie" (distribution), "donut" (distribution with center space), "progress" (skill levels or completion rates). Omit chart if no data makes sense.
 - diagram: include on 1-2 sections where a step-by-step process ("process") or chronological milestones ("timeline") would clarify the concept. Omit diagram if not applicable.
 - NEVER include both chart and diagram on the same section
-- chart and diagram data must be realistic, specific, and relevant to the content — not generic placeholders`;
+- chart and diagram data must be realistic, specific, and relevant to the content — not generic placeholders
+- comparisonTable: include on at most 1 section where comparing 2-4 options/tools/approaches adds value (e.g. pricing tiers, feature comparison, approach tradeoffs). Format: headers = column names (2-4), rows = [{feature, values: [one per column]}]. Set highlightCol to the index (0-based) of the recommended/winner column. Values can be plain text, "Yes"/"No", or a percentage. Omit if not genuinely useful.
+- NEVER include comparisonTable on the same section as chart or diagram`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

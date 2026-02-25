@@ -192,8 +192,8 @@ export function SectionRenderer({ section, config, index, onImageClick: onImageC
             {section.callout && (
                 <CalloutBox type={section.callout.type} text={section.callout.text} config={config} />
             )}
-            {(section.chart || section.diagram) && (
-                <VizRenderer chart={section.chart} diagram={section.diagram} config={config} />
+            {(section.chart || section.diagram || section.comparisonTable) && (
+                <VizRenderer chart={section.chart} diagram={section.diagram} comparisonTable={section.comparisonTable} config={config} />
             )}
         </>
     );

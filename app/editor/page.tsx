@@ -54,6 +54,7 @@ export default function EditorPage() {
   const [sharing, setSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string } | null>(null);
+  const [previewDark, setPreviewDark] = useState(false);
 
   // Check for saved draft on mount
   useEffect(() => {
@@ -476,6 +477,18 @@ export default function EditorPage() {
             className="lg:col-span-2 border border-gray-300 rounded-lg bg-white overflow-auto"
             style={{ maxHeight: "calc(100vh - 160px)" }}
           >
+            {/* Preview toolbar */}
+            {generatedContent && (
+              <div className="sticky top-0 z-10 flex justify-end px-3 py-2 bg-white/80 backdrop-blur border-b border-gray-100">
+                <button
+                  onClick={() => setPreviewDark((d) => !d)}
+                  className="text-xs px-3 py-1.5 rounded-full border font-medium transition-all"
+                  style={{ borderColor: previewDark ? "#6d28d9" : "#e5e7eb", color: previewDark ? "#7c3aed" : "#6b7280", backgroundColor: previewDark ? "#7c3aed15" : "transparent" }}
+                >
+                  {previewDark ? "☀️ Light mode" : "🌙 Dark preview"}
+                </button>
+              </div>
+            )}
             {!generatedContent && !loading && (
               <div className="p-12 text-center">
                 <p className="text-gray-400 text-lg">✦</p>
@@ -496,7 +509,7 @@ export default function EditorPage() {
               <ImageSwapContext.Provider value={{
                 onImageClick: (si, ii, kw) => setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw }),
               }}>
-                <div className="bg-gray-100">{renderTemplate()}</div>
+                <div className="bg-gray-100" style={previewDark ? { filter: "invert(1) hue-rotate(180deg)" } : {}}>{renderTemplate()}</div>
               </ImageSwapContext.Provider>
             )}
           </div>

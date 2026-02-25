@@ -42,6 +42,18 @@ export interface DiagramData {
   steps: DiagramStep[];
 }
 
+export interface ComparisonRow {
+  feature: string;
+  values: string[];
+}
+
+export interface ComparisonTableData {
+  title?: string;
+  headers: string[];
+  rows: ComparisonRow[];
+  highlightCol?: number;
+}
+
 export interface EbookSection {
   title: string;
   content: string;
@@ -53,6 +65,7 @@ export interface EbookSection {
   iconName?: string;
   chart?: ChartData;
   diagram?: DiagramData;
+  comparisonTable?: ComparisonTableData;
   /** Legacy single image (kept for backward compat) */
   image?: ImageAsset;
   /** Multiple images (new) */
