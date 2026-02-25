@@ -16,6 +16,7 @@ import { SocialPanel } from "@/components/social/SocialPanel";
 import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib/templates/types";
 import { exportToPPTX } from "@/lib/export/pptx";
 import { ShareModal } from "@/components/ui/ShareModal";
+import { SectionManager } from "@/components/ui/SectionManager";
 
 const DRAFT_KEY = "pagesmith_draft";
 
@@ -409,6 +410,15 @@ export default function EditorPage() {
                 {showEdit && (
                   <EditPanel content={generatedContent} onChange={handleContentChange} />
                 )}
+
+                {/* Section reorder + layout override */}
+                <SectionManager
+                  sections={generatedContent.sections as never[]}
+                  onChange={(newSections) =>
+                    handleContentChange({ ...generatedContent, sections: newSections as never })
+                  }
+                  config={effectiveConfig}
+                />
 
                 <button
                   onClick={handleExportPDF}
