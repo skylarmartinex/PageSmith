@@ -103,6 +103,40 @@
 - [ ] Auto-save
 - [ ] Mobile responsive (optional)
 
+### Phase 11: Excalidraw-Style Infographics
+**Goal:** Enable AI-generated infographics with hand-drawn/sketchy Excalidraw aesthetic as fallback when Imagen 3 isn't accurate enough
+
+**What This Enables:**
+- Visual infographics (not just flowcharts/diagrams)
+- Hand-drawn aesthetic like Excalidraw
+- Use in PageSmith ebooks and presentations
+- AI-assisted generation with human-in-the-loop refinement
+
+**Implementation Options:**
+- [ ] **Option 1: AI → Excalidraw JSON → Render**
+  - [ ] Claude generates Excalidraw-compatible JSON (elements: rectangles, text, arrows, etc.)
+  - [ ] Embed Excalidraw React component in PageSmith to render/edit
+  - [ ] User can tweak the output before exporting
+  - [ ] Export as PNG/SVG for ebooks
+
+- [ ] **Option 2: Human-in-the-Loop Flow**
+  - [ ] AI generates detailed description/layout of the infographic
+  - [ ] Opens Excalidraw (embedded or link to excalidraw.com)
+  - [ ] User creates based on AI guidance, or AI pre-populates rough draft
+  - [ ] User refines and exports
+
+- [ ] **Option 3: Hybrid (Recommended)**
+  - [ ] AI generates rough Excalidraw JSON with placeholders
+  - [ ] User opens in embedded editor to polish
+  - [ ] One-click export to ebook (PNG/SVG → insert into section)
+
+**Deliverables:**
+- [ ] Excalidraw React component embedded in PageSmith
+- [ ] AI prompt that outputs Excalidraw JSON structure
+- [ ] Export flow (PNG/SVG → insert into ebook)
+- [ ] UI to trigger infographic generation from ebook editor
+- [ ] Integration with existing image insertion flow
+
 ---
 
 ## Technical Stack
