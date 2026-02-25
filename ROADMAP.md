@@ -26,6 +26,25 @@
 - Enter key shortcut for generation
 - Author + subtitle fields on all covers
 - 20 Google Fonts
+- **Web-grounded stats via Exa** — real cited statistics injected into Claude's prompt
+- **Brand voice matching** — paste sample text → Claude matches tone throughout
+- **Persona targeting** — "Write for a CFO/founder/marketer" → Claude adapts vocabulary and depth
+- **SVG bar/line/pie/donut/progress charts** — AI-generated data rendered as crisp SVG
+- **Process flow diagrams** — numbered steps with arrows as styled SVG
+- **Timeline components** — milestone timelines with dates and descriptions
+- **Comparison tables** — feature matrix with brand colors, ✓/✗ cells, recommended column badge
+- **Icon + text grids** — 2/3/4 col Lucide icon + title + description cards
+- **Chapter opener spreads** — full-bleed section dividers with chapter number, title, dot pattern
+- **Shareable web URL** — live webpage at `/share/[id]` with reading progress bar, sticky ToC, scroll animations
+- **Lead capture CTA final page** — branded email opt-in on every shared ebook
+- **Section drag-and-drop reorder** — drag handles in sidebar to reorder sections
+- **Per-section layout override** — click badge → pick from 6 layouts per section
+- **Inline image swap** — hover any image → "🔄 Swap image" → Unsplash OR Imagen 3 AI Generate
+- **Custom hex color picker** — type exact hex codes alongside color swatches
+- **Font pairing suggestions** — "✨ AI Font" button picks best Google Font pair for the topic
+- **Dark mode preview toggle** — 🌙 button applies CSS invert filter across all templates
+- **Imagen 3 (Nano Banana) hybrid integration** — dual-tab ImagePicker (Unsplash + AI Generate), AI Infographic toggle per chart/diagram section
+- **Brand preset save/load** — named presets persist in localStorage
 
 ---
 
@@ -35,14 +54,14 @@
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| **Web-grounded stats** | Integrate Exa/Tavily so every statistic Claude writes is real and cited — not plausible fiction | ⭐⭐⭐ |
-| **Brand voice matching** | User pastes 3–5 sentences of their writing style → Claude matches tone throughout | ⭐⭐⭐ |
+| ~~**Web-grounded stats**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Brand voice matching**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Persona targeting**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
 | **Competitive angle mode** | "Position me as the expert vs [competitor]" — Claude writes to differentiate the author | ⭐⭐ |
 | **Research brief mode** | User uploads a PDF/doc, Claude uses it as source material for the ebook | ⭐⭐⭐ |
 | **Auto-longer content** | Option for 500-800 word sections with proper structure (H3, lists, transitions) | ⭐⭐ |
 | **FAQ section generation** | Claude generates a real FAQ page as the final section based on the full content | ⭐ |
 | **Executive summary page** | AI-written 1-page summary / TL;DR after the ToC | ⭐⭐ |
-| **Persona targeting** | "Write this for a CFO" / "Write this for a small business owner" — changes vocabulary, depth, examples | ⭐⭐⭐ |
 | **Content gap analysis** | After generating, Claude reviews what's missing and suggests 2-3 additional sections | ⭐⭐ |
 
 ---
@@ -51,15 +70,16 @@
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| **SVG bar/line/pie charts** | Claude generates the data → render as real interactive SVG charts inline in sections | ⭐⭐⭐ |
-| **Process flow diagrams** | Numbered steps with arrows rendered as styled SVG (like a flowchart) | ⭐⭐⭐ |
-| **Timeline components** | Horizontal or vertical milestone timelines with dates and descriptions | ⭐⭐ |
-| **Comparison table** | AI generates feature matrix / vs table → rendered as beautiful HTML table with brand colors | ⭐⭐⭐ |
-| **Icon + text grids** | Key benefits / features listed as Lucide icon + heading + 1-line desc in a 2-3 col grid | ⭐⭐ |
+| ~~**SVG bar/line/pie charts**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Process flow diagrams**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Timeline components**~~ | ✅ Shipped | ~~⭐⭐~~ |
+| ~~**Comparison table**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Icon + text grids**~~ | ✅ Shipped | ~~⭐⭐~~ |
+| ~~**Chapter opener spreads**~~ | ✅ Shipped | ~~⭐⭐~~ |
+| ~~**AI-generated image alt (Imagen 3)**~~ | ✅ Shipped — dual-tab ImagePicker + AI Infographic toggle | ~~⭐⭐~~ |
+| ~~**Progress/percentage bars**~~ | ✅ Shipped (progress chart type) | ~~⭐~~ |
+| **Excalidraw-style infographics** | AI → Excalidraw JSON → embedded editor → export PNG/SVG to ebook | ⭐⭐⭐ |
 | **Quote cards** | Full-page or half-page stylized expert quotes with author attribution | ⭐⭐ |
-| **AI-generated image alt (custom illustration)** | Use Stability/Replicate to generate custom illustrations instead of stock photos | ⭐⭐ |
-| **Chapter opener spreads** | Full-page graphic section dividers (large number + title + accent) between major sections | ⭐⭐ |
-| **Progress/percentage bars** | Visual bar charts for showing completion, adoption rates, split stats | ⭐ |
 | **Side-by-side quote vs stat** | Layout: pull quote on left, big stat on right with divider | ⭐ |
 
 ---
@@ -68,14 +88,14 @@
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| **Shareable web URL** | Render ebook as a beautiful live webpage at `/share/[id]` — scroll anim, sticky ToC, progress bar | ⭐⭐⭐ |
+| ~~**Shareable web URL**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Lead capture CTA page**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Dark mode ebook**~~ | ✅ Shipped (preview toggle) | ~~⭐⭐~~ |
 | **Interactive flipbook mode** | Page-turning HTML flipbook export you can embed anywhere | ⭐⭐⭐ |
 | **EPUB export** | Standard ebook format for Kindle / Apple Books / iBooks | ⭐⭐ |
 | **HTML embed export** | Drop the ebook as an `<iframe>` on any website | ⭐⭐ |
-| **Lead capture CTA page** | Final page with branded email opt-in form + custom CTA copy | ⭐⭐⭐ |
 | **Gated download** | Share a link, reader enters email → gets ebook — all handled by PageSmith | ⭐⭐⭐ |
 | **Print-ready PDF** | Bleed marks, CMYK export option for professional printing | ⭐ |
-| **Dark mode ebook** | Toggle between light/dark version of any template | ⭐⭐ |
 
 ---
 
@@ -83,14 +103,14 @@
 
 | Feature | Description | Impact |
 |---------|-------------|--------|
-| **Section drag-and-drop reorder** | Reorder sections after generation via drag handles | ⭐⭐⭐ |
-| **Per-section layout override** | Click a section and choose its layout manually (override AI pick) | ⭐⭐⭐ |
-| **Inline image swap** | Click any image to search for a replacement from Unsplash | ⭐⭐ |
-| **Custom color picker** | Full HSL/hex color picker beyond the 5 preset swatches | ⭐⭐ |
-| **Brand preset save/load** | Save a brand config as a named preset, load it on future ebooks | ⭐⭐ |
+| ~~**Section drag-and-drop reorder**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Per-section layout override**~~ | ✅ Shipped | ~~⭐⭐⭐~~ |
+| ~~**Inline image swap**~~ | ✅ Shipped (Unsplash + Imagen 3) | ~~⭐⭐~~ |
+| ~~**Custom color picker**~~ | ✅ Shipped (hex inputs) | ~~⭐⭐~~ |
+| ~~**Brand preset save/load**~~ | ✅ Shipped | ~~⭐⭐~~ |
+| ~~**Font pairing suggestions**~~ | ✅ Shipped (AI-powered) | ~~⭐⭐~~ |
 | **Logo background removal** | Auto-remove background from uploaded logo | ⭐ |
 | **Margin/spacing controls** | Adjust section padding globally or per-section in the editor | ⭐ |
-| **Font pairing suggestions** | AI picks a heading + body font pairing from Google Fonts based on template vibe | ⭐⭐ |
 | **Custom template builder** | Visual editor to define your own template from scratch | ⭐⭐⭐ |
 | **Gradient cover builder** | Choose gradient direction, colors, opacity for covers | ⭐ |
 | **Section background tints** | Apply light tint backgrounds per-section for visual variety | ⭐ |
@@ -142,14 +162,14 @@
 
 ---
 
-## Priority Stack (if picking the next 5 things to build)
+## Priority Stack (Next 5 to build)
 
-1. **Shareable web URL** — turns PageSmith from a download tool into a publishing platform
-2. **SVG data visualizations** — charts/diagrams nobody else auto-generates
-3. **Drag-and-drop section reorder + per-section layout override** — closes biggest UX gap
-4. **Web-grounded stats via Exa** — real citations make content credibly useful
-5. **Lead capture CTA final page** — makes the ebook a growth tool, not just a document
+1. **Scroll-triggered animations on share page** — stat counters, fade-ins (high visual impact, web-native)
+2. **Gated download** — email → ebook funnel (turns every share into a lead gen machine)
+3. **Research brief mode** — upload PDF → Claude uses it as source material
+4. **Excalidraw-style infographics** — AI → hand-drawn visual → export to ebook
+5. **User accounts + ebook library** — cloud save, history dashboard
 
 ---
 
-*Last updated: Feb 2026*
+*Last updated: Feb 24, 2026*
