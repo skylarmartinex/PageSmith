@@ -15,12 +15,18 @@ export default function Home() {
           <br />
           No design skills required.
         </p>
-        <div className="pt-4">
+        <div className="pt-4 flex flex-col gap-3 items-center">
           <Link
             href="/editor"
             className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             Start Creating
+          </Link>
+          <Link
+            href="/projects"
+            className="inline-block px-6 py-2 text-gray-700 hover:text-blue-600 transition-colors text-sm"
+          >
+            📁 My Projects
           </Link>
         </div>
       </div>

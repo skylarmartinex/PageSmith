@@ -19,6 +19,7 @@
     "exa-js": "^2.4.0",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.575.0",
+    "nanoid": "^5.1.6",
     "next": "^14.1.0",
     "pptxgenjs": "^4.0.1",
     "puppeteer": "^24.37.5",

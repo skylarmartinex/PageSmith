@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { MinimalTemplate } from "@/components/templates/MinimalTemplate";
 import { ProfessionalTemplate } from "@/components/templates/ProfessionalTemplate";
 import { ModernTemplate } from "@/components/templates/ModernTemplate";
@@ -16,6 +17,7 @@ import { SocialPanel } from "@/components/social/SocialPanel";
 import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib/templates/types";
 import { exportToPPTX } from "@/lib/export/pptx";
 import { ShareModal } from "@/components/ui/ShareModal";
+import { SaveProjectModal } from "@/components/ui/SaveProjectModal";
 import { SectionManager } from "@/components/ui/SectionManager";
 import { ImagePicker } from "@/components/ui/ImagePicker";
 import { ImageSwapContext } from "@/lib/context/ImageSwapContext";
@@ -37,6 +39,9 @@ interface Draft {
 }
 
 export default function EditorPage() {
+  const searchParams = useSearchParams();
+  const projectIdFromUrl = searchParams.get("project");
+
   const [topic, setTopic] = useState("");
   const [outline, setOutline] = useState("");
   const [loading, setLoading] = useState(false);
@@ -55,6 +60,11 @@ export default function EditorPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string; sectionTitle?: string; sectionContent?: string } | null>(null);
   const [previewDark, setPreviewDark] = useState(false);
+  
+  // Project save/load
+  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  const [currentProjectName, setCurrentProjectName] = useState<string>("");
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   // Check for saved draft on mount
   useEffect(() => {
@@ -67,6 +77,32 @@ export default function EditorPage() {
       }
     } catch { }
   }, []);
+
+  // Load project from URL if present
+  useEffect(() => {
+    if (!projectIdFromUrl) return;
+
+    const loadProject = async () => {
+      try {
+        const response = await fetch(`/api/projects/${projectIdFromUrl}`);
+        if (!response.ok) throw new Error("Project not found");
+
+        const { project } = await response.json();
+        
+        setCurrentProjectId(project.id);
+        setCurrentProjectName(project.name);
+        setSelectedTemplate(project.template || "minimal");
+        setBrandConfig(project.brand || DEFAULT_BRAND);
+        setGeneratedContent(project.content);
+        setTopic(project.content.title || "");
+      } catch (err) {
+        setError("Failed to load project");
+        console.error(err);
+      }
+    };
+
+    loadProject();
+  }, [projectIdFromUrl]);
 
   // Auto-save draft whenever content is generated
   const saveDraft = (content: GeneratedContent) => {
@@ -218,6 +254,53 @@ export default function EditorPage() {
     });
     const updated = { ...generatedContent, sections };
     handleContentChange(updated);
+  };
+
+  const handleSaveProject = async (name: string) => {
+    if (!generatedContent) return;
+
+    try {
+      if (currentProjectId) {
+        // Update existing project
+        const response = await fetch(`/api/projects/${currentProjectId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            content: generatedContent,
+            template: selectedTemplate,
+            brand: brandConfig,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to update project");
+        
+        setCurrentProjectName(name);
+        alert("Project updated successfully!");
+      } else {
+        // Create new project
+        const response = await fetch("/api/projects", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            content: generatedContent,
+            template: selectedTemplate,
+            brand: brandConfig,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Failed to save project");
+
+        const { project } = await response.json();
+        setCurrentProjectId(project.id);
+        setCurrentProjectName(name);
+        alert("Project saved successfully!");
+      }
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
   };
 
   const handleShare = async () => {
@@ -451,6 +534,13 @@ export default function EditorPage() {
                   {sharing ? "Creating link..." : "🔗 Share Ebook"}
                 </button>
 
+                <button
+                  onClick={() => setShowSaveModal(true)}
+                  className="w-full px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+                >
+                  💾 {currentProjectId ? "Update" : "Save"} Project
+                </button>
+
                 <SocialPanel
                   title={generatedContent.title}
                   sections={generatedContent.sections}
@@ -461,6 +551,14 @@ export default function EditorPage() {
           </div>
 
           {shareUrl && <ShareModal url={shareUrl} onClose={() => setShareUrl(null)} />}
+          
+          {showSaveModal && (
+            <SaveProjectModal
+              currentName={currentProjectName || generatedContent?.title}
+              onSave={handleSaveProject}
+              onClose={() => setShowSaveModal(false)}
+            />
+          )}
 
           {imagePicker && (
             <ImagePicker
