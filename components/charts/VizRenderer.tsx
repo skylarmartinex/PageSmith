@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { ChartData, DiagramData, ComparisonTableData, IconGridData, TemplateConfig } from "@/lib/templates/types";
-import { BarChart } from "./BarChart";
-import { LineChart } from "./LineChart";
-import { PieChart } from "./PieChart";
+import { RechartsBar } from "./RechartsBar";
+import { RechartsLine } from "./RechartsLine";
+import { RechartsPie } from "./RechartsPie";
+import { RechartsArea } from "./RechartsArea";
 import { ProgressChart } from "./ProgressChart";
 import { ProcessFlow } from "@/components/diagrams/ProcessFlow";
 import { Timeline } from "@/components/diagrams/Timeline";
@@ -68,7 +69,7 @@ function AIInfographicToggle({
                         className="px-3 py-1 transition-all"
                         style={{ backgroundColor: !useAI ? "#1e40af" : "transparent", color: !useAI ? "white" : "#6b7280" }}
                     >
-                        SVG Chart
+                        Chart
                     </button>
                     <button
                         onClick={() => { if (!aiUrl) generate(); else setUseAI(true); }}
@@ -104,36 +105,38 @@ export function VizRenderer({ chart, diagram, comparisonTable, iconGrid, config,
         return <IconGrid grid={iconGrid} config={config} />;
     }
     if (chart) {
-        const svgChart = (() => {
+        const renderChart = () => {
             switch (chart.type) {
-                case "bar": return <BarChart chart={chart} config={config} />;
-                case "line": return <LineChart chart={chart} config={config} />;
-                case "pie": return <PieChart chart={chart} config={config} />;
-                case "donut": return <PieChart chart={chart} config={config} donut />;
+                case "bar": return <RechartsBar chart={chart} config={config} />;
+                case "line": return <RechartsLine chart={chart} config={config} />;
+                case "area": return <RechartsArea chart={chart} config={config} />;
+                case "pie": return <RechartsPie chart={chart} config={config} />;
+                case "donut": return <RechartsPie chart={chart} config={config} donut />;
                 case "progress": return <ProgressChart chart={chart} config={config} />;
                 default: return null;
             }
-        })();
-        if (!svgChart) return null;
+        };
+        const chartEl = renderChart();
+        if (!chartEl) return null;
         return (
             <AIInfographicToggle chart={chart} sectionTitle={sectionTitle}>
-                {svgChart}
+                {chartEl}
             </AIInfographicToggle>
         );
     }
 
     if (diagram) {
-        const svgDiagram = (() => {
+        const diagramEl = (() => {
             switch (diagram.type) {
                 case "process": return <ProcessFlow diagram={diagram} config={config} />;
                 case "timeline": return <Timeline diagram={diagram} config={config} />;
                 default: return null;
             }
         })();
-        if (!svgDiagram) return null;
+        if (!diagramEl) return null;
         return (
             <AIInfographicToggle diagram={diagram} sectionTitle={sectionTitle}>
-                {svgDiagram}
+                {diagramEl}
             </AIInfographicToggle>
         );
     }

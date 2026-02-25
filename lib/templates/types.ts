@@ -24,7 +24,7 @@ export interface ChartDataPoint {
 }
 
 export interface ChartData {
-  type: "bar" | "line" | "pie" | "donut" | "progress";
+  type: "bar" | "line" | "area" | "pie" | "donut" | "progress";
   title?: string;
   unit?: string;
   data: ChartDataPoint[];
@@ -259,6 +259,32 @@ export const TEMPLATES: TemplateConfig[] = [
       text: "#e8e8e8",
     },
     fontFamily: "JetBrains Mono, Fira Code, monospace",
+  },
+  {
+    id: "editorial",
+    name: "Editorial",
+    description: "Magazine-style with bold cover, full-bleed photography, and strong typographic hierarchy",
+    colors: {
+      primary: "#111111",
+      secondary: "#555555",
+      accent: "#e63946",
+      background: "#ffffff",
+      text: "#1a1a1a",
+    },
+    fontFamily: "'Georgia', serif",
+  },
+  {
+    id: "luxury",
+    name: "Luxury",
+    description: "Premium dark cover with gold ornaments, serif italic title, and elegant colophon",
+    colors: {
+      primary: "#1a1008",
+      secondary: "#9a8060",
+      accent: "#c9a84c",
+      background: "#faf8f2",
+      text: "#2a1e10",
+    },
+    fontFamily: "'Georgia', 'Times New Roman', serif",
   },
   {
     id: "warm",

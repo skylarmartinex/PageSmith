@@ -99,6 +99,39 @@ function MiniPreview({ templateId, colors }: { templateId: string; colors: Recor
     );
   }
 
+  if (templateId === "editorial") {
+    return (
+      <div className="w-full h-24 rounded overflow-hidden" style={{ backgroundColor: background }}>
+        <div className="h-12 relative flex items-end px-2 pb-1.5" style={{ backgroundColor: "#111" }}>
+          <div className="absolute top-1.5 left-2 w-6 h-0.5 rounded" style={{ backgroundColor: accent }} />
+          <div className="h-2 w-16 rounded" style={{ backgroundColor: "rgba(255,255,255,0.85)" }} />
+        </div>
+        <div className="p-2 space-y-1">
+          <div className="h-1 w-12 rounded" style={{ backgroundColor: text, opacity: 0.5 }} />
+          <div className="h-1 w-14 rounded" style={{ backgroundColor: text, opacity: 0.3 }} />
+          <div className="flex items-center gap-1 mt-1">
+            <div className="w-1 h-3 rounded" style={{ backgroundColor: accent }} />
+            <div className="h-1 w-10 rounded" style={{ backgroundColor: text, opacity: 0.4 }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (templateId === "luxury") {
+    return (
+      <div className="w-full h-24 rounded overflow-hidden p-3" style={{ backgroundColor: primary }}>
+        <div className="h-px w-full mb-2" style={{ backgroundColor: accent }} />
+        <div className="text-center">
+          <div className="h-1 w-4 rounded mx-auto mb-1.5" style={{ backgroundColor: accent, opacity: 0.6 }} />
+          <div className="h-2 w-16 rounded mx-auto mb-1.5" style={{ backgroundColor: "rgba(255,255,255,0.85)" }} />
+          <div className="h-1 w-10 rounded mx-auto" style={{ backgroundColor: accent, opacity: 0.5 }} />
+        </div>
+        <div className="h-px w-full mt-2" style={{ backgroundColor: accent }} />
+      </div>
+    );
+  }
+
   // Generic preview for minimal, professional, modern
   return (
     <div className="w-full h-24 rounded overflow-hidden" style={{ backgroundColor: background }}>
@@ -131,7 +164,7 @@ export function TemplateSelector({ selectedTemplate, onSelectTemplate }: Templat
           <div className="mb-2 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
             <MiniPreview
               templateId={hoveredId}
-              colors={TEMPLATES.find((t) => t.id === hoveredId)?.colors as Record<string, string> ?? {}}
+              colors={(TEMPLATES.find((t) => t.id === hoveredId)?.colors ?? {}) as unknown as Record<string, string>}
             />
           </div>
         )}
@@ -145,8 +178,8 @@ export function TemplateSelector({ selectedTemplate, onSelectTemplate }: Templat
             onMouseEnter={() => setHoveredId(template.id)}
             onMouseLeave={() => setHoveredId(null)}
             className={`text-left px-3 py-2.5 rounded-lg border-2 transition-all ${selectedTemplate === template.id
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-400 bg-white"
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-200 hover:border-gray-400 bg-white"
               }`}
           >
             <div className="flex items-center justify-between gap-3">

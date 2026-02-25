@@ -13,29 +13,37 @@ export interface GenerateContentRequest {
   targetPersona?: string;
 }
 
+const LUCIDE_ICONS = [
+  "Lightbulb", "Zap", "Target", "TrendingUp", "BookOpen", "Star",
+  "Globe", "Shield", "Rocket", "Users", "Heart", "Brain",
+  "Compass", "Layers", "Code", "BarChart", "Clock", "Award",
+  "CheckCircle", "AlertCircle", "ArrowRight", "Sparkles", "Lock",
+  "Megaphone", "PieChart", "Database", "Cpu", "Wrench", "Map",
+  "Flag", "Trophy", "Briefcase", "ChevronRight", "Eye",
+];
+
 export async function generateEbookContent(
   request: GenerateContentRequest
 ) {
-  const { topic, outline, sections = 5, brandVoice, targetPersona } = request;
+  const { topic, outline, sections = 6, brandVoice, targetPersona } = request;
 
-  const layoutTypes = ["text-only", "image-right", "image-left", "image-full", "image-grid", "image-overlay"];
-  const lucideIcons = [
-    "Lightbulb", "Zap", "Target", "TrendingUp", "BookOpen", "Star",
-    "Globe", "Shield", "Rocket", "Users", "Heart", "Brain",
-    "Compass", "Layers", "Code", "BarChart", "Clock", "Award"
-  ];
+  const systemPrompt = `You are an expert content strategist and ebook writer.
+You create professional, visually-rich ebooks with varied layouts, compelling pull quotes,
+specific statistics, and actionable callout boxes.
+You write with clarity, depth, and authority — never with filler or vague generalities.
+Always return valid JSON only — no markdown code fences, no explanation.
 
-  const systemPrompt = `You are an expert content strategist and ebook writer. 
-You create professional, visually rich ebooks with varied layouts, compelling pull quotes, 
-key statistics, and actionable callout boxes. Always return valid JSON only — no markdown, no explanation.
+MANDATORY QUALITY RULES (violations will cause rejection):
+1. Every section MUST include a pullQuote — make it quotable, punchy, ≤20 words.
+2. Every section MUST include exactly one visual element (chart OR diagram OR comparisonTable OR iconGrid).
+3. stats values must be specific and realistic (e.g., "67%", "$2.4M", "3.2x" — not round numbers like "50%").
+4. callout.text must be actionable and specific — never generic (e.g., NOT "Consider your options carefully").
+5. Content must have 2-3 distinct paragraphs separated by \\n\\n. Use "### Title" for H3 subheadings on their own line.
+6. imageKeywords must be highly specific and visual (e.g., "remote team video call" not "teamwork").
+${targetPersona ? `\nTARGET AUDIENCE: Write specifically for ${targetPersona}. Every section speaks directly to their challenges.` : ""}
+${brandVoice ? `\nBRAND VOICE: Match this voice sample throughout — do not copy content, only tone:\n---\n${brandVoice}\n---` : ""}`;
 
-IMPORTANT: When research context is provided below, actively use those real statistics and facts in your content. 
-Cite sources naturally (e.g., "According to [Source], ..."). 
-Make your content credible and specific — not generic.
-${targetPersona ? `\nTARGET AUDIENCE: Write specifically for ${targetPersona}. Use vocabulary, examples, and depth appropriate for this audience. Every section should speak directly to their challenges and goals.` : ""}
-${brandVoice ? `\nBRAND VOICE: Match the tone, vocabulary, and style of the following example text throughout the entire ebook. Do not copy the content, only match the voice:\n---\n${brandVoice}\n---` : ""}`;
-
-  // Fetch real research context from Exa (best-effort, won't block if unavailable)
+  // Fetch real research context (best-effort)
   let researchContext = "";
   try {
     const facts = await researchTopic(topic);
@@ -44,38 +52,47 @@ ${brandVoice ? `\nBRAND VOICE: Match the tone, vocabulary, and style of the foll
     // Exa not configured or unavailable — proceed without research
   }
 
-  const userPrompt = outline
-    ? `Create a professional ebook about "${topic}" using this outline:\n\n${outline}\n\nGenerate ${sections} sections.`
-    : `Create a professional ebook about "${topic}". Generate ${sections} sections covering the most important aspects.`;
+  const basePrompt = outline
+    ? `Create a professional, visually-rich ebook about "${topic}" using this outline:\n\n${outline}\n\nGenerate exactly ${sections} sections.`
+    : `Create a professional, visually-rich ebook about "${topic}". Generate exactly ${sections} sections covering the most important aspects. Section titles must be specific and compelling, not generic (e.g., NOT "Introduction" or "Conclusion").`;
 
   const formatPrompt = `
 
-For each section choose the most appropriate layoutType based on content:
-- "text-only": concept-heavy explanations with no obvious visual
-- "image-right": narrative content with one supporting image on the right  
-- "image-left": alternate side for visual variety
-- "image-full": dramatic openers or milestone sections
-- "image-grid": data/comparison/step-by-step sections that benefit from multiple visuals
+LAYOUT SELECTION GUIDE — choose based purely on content:
+- "text-only": concept-heavy explanations without obvious visuals
+- "image-right": narrative content with one supporting image on the right
+- "image-left": alternate side for visual variety (don't use same side twice in a row)
+- "image-full": dramatic openers or milestone sections (max 2 per ebook)
+- "image-grid": multi-step or comparison sections (max 2 per ebook)
+- "image-overlay": bold insight/quote sections (max 2, never first or last)
 
-Return ONLY this JSON structure (no markdown):
+CONTENT TYPE GUIDE — pick the best visual component:
+- process section → diagram type "process" (4-6 steps)
+- timeline/history → diagram type "timeline" (4-6 milestones)
+- data/trends → chart type "bar" or "area" or "line" (min 4 data points)
+- distribution → chart type "pie" or "donut" (min 3 slices)
+- feature comparison → comparisonTable (2-4 columns, 4-6 rows)
+- features/tools list → iconGrid (4-6 items, columns 2 or 3)
+
+Return ONLY this JSON (no markdown):
 {
-  "title": "Ebook title",
-  "subtitle": "Compelling subtitle in 8 words or less",
-  "coverImageKeyword": "A single vivid keyword for the cover hero image (e.g. 'golf swing', 'mountain sunrise', 'startup team')",
+  "title": "Ebook title (6-10 words)",
+  "subtitle": "Compelling subtitle (8-12 words)",
+  "coverImageKeyword": "Single vivid keyword for cover (e.g. 'mountain sunrise')",
   "sections": [
     {
-      "title": "Section title",
-      "content": "Main body text, 200-300 words. Write naturally with paragraph breaks using \\n\\n.",
+      "title": "Section title (5-8 words, specific and compelling)",
+      "content": "Body text 220-320 words. Natural paragraphs with \\\\n\\\\n between them. Use ### for H3 subheads.",
       "layoutType": "image-right",
-      "imageKeywords": ["keyword1", "keyword2", "keyword3"],
-      "pullQuote": "A compelling 1-sentence insight from this section worth highlighting",
+      "imageKeywords": ["specific keyword 1", "specific keyword 2", "specific keyword 3"],
+      "pullQuote": "Punchy 1-sentence insight, quotable, ≤20 words",
       "iconName": "Lightbulb",
       "stats": [
-        { "label": "Stat Label", "value": "73%" }
+        { "label": "Stat label", "value": "67%" }
       ],
       "callout": {
         "type": "tip",
-        "text": "A concise actionable tip, warning, or key insight in 1-2 sentences"
+        "text": "Specific, actionable advice in 1-2 sentences."
       },
       "chart": {
         "type": "bar",
@@ -83,47 +100,39 @@ Return ONLY this JSON structure (no markdown):
         "unit": "%",
         "data": [
           { "label": "Category A", "value": 72 },
-          { "label": "Category B", "value": 45 }
-        ]
-      },
-      "diagram": {
-        "type": "process",
-        "title": "Diagram title",
-        "steps": [
-          { "title": "Step 1", "description": "Brief explanation", "date": "Optional date or phase" }
+          { "label": "Category B", "value": 45 },
+          { "label": "Category C", "value": 61 },
+          { "label": "Category D", "value": 38 }
         ]
       }
     }
   ]
 }
 
-Rules:
-- iconName must be one of: ${lucideIcons.join(", ")}
-- stats: include 1-3 real or illustrative statistics ONLY for sections where data adds value; omit otherwise
-- callout.type: "tip" for best practices, "warning" for pitfalls, "insight" for aha moments; omit if nothing meaningful
-- pullQuote: always include — make it quotable and punchy
-- imageKeywords: always 3 distinct, specific keywords
-- layoutType: vary across sections; use "image-overlay" for 1-2 high-drama sections; never use it for the first or last section
-- coverImageKeyword: single highly visual keyword that represents the ebook topic perfectly
-- chart: include on 1-3 sections where data comparisons, trends, distributions, or percentages add value. Types: "bar" (comparisons), "line" (trends over time), "pie" (distribution), "donut" (distribution with center space), "progress" (skill levels or completion rates). Omit chart if no data makes sense.
-- diagram: include on 1-2 sections where a step-by-step process ("process") or chronological milestones ("timeline") would clarify the concept. Omit diagram if not applicable.
-- NEVER include both chart and diagram on the same section
-- chart and diagram data must be realistic, specific, and relevant to the content — not generic placeholders
-- comparisonTable: include on at most 1 section where comparing 2-4 options/tools/approaches adds value (e.g. pricing tiers, feature comparison, approach tradeoffs). Format: headers = column names (2-4), rows = [{feature, values: [one per column]}]. Set highlightCol to the index (0-based) of the recommended/winner column. Values can be plain text, "Yes"/"No", or a percentage. Omit if not genuinely useful.
-- NEVER include comparisonTable on the same section as chart or diagram
-- iconGrid: include on 1-2 sections where listing 4-8 discrete concepts, tools, strategies, or features as icon+title+description cards makes more impact than prose. Each item needs: icon (Lucide name), title (3-6 words), description (1-2 sentences). Use columns: 2 or 3 or 4. Omit if everything fits in body text.
-- chapterDivider: optionally include on 1-2 sections to mark a major theme shift (e.g., midpoint, second half). Format: chapterNumber (sequential), title (the section's theme), subtitle (1 sentence teaser). Never on the first or last section. Omit on most sections.`;
+RULES (these are enforced — violations break the parser):
+- pullQuote: ALWAYS include, ALWAYS ≤20 words
+- One and only one of: chart, diagram, comparisonTable, iconGrid per section
+- NEVER chart + diagram on the same section
+- stats: 1-3 entries, only for data-heavy sections — omit otherwise
+- callout: include for 60% of sections; always actionable
+- iconName from: ${LUCIDE_ICONS.join(", ")}
+- chart.data: minimum 4 data points
+- layoutType: vary — no layout should repeat 3+ times in a row
+- image-overlay: max 2 sections, never first or last
+- comparisonTable: include highlightCol (0-based index of the recommended column)
+- chapterDivider: optionally add to 1-2 mid-document sections: { chapterNumber, title, subtitle }
+- coverImageKeyword: single highly visual keyword`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 6000,
+    max_tokens: 8000,
     system: systemPrompt,
     messages: [
       {
         role: "user",
         content: [
-          userPrompt + formatPrompt,
-          researchContext ? `\n\n${researchContext}` : "",
+          basePrompt + formatPrompt,
+          researchContext ? `\n\nRESEARCH CONTEXT — use these facts actively:\n${researchContext}` : "",
         ].join(""),
       },
     ],
@@ -132,7 +141,7 @@ Rules:
   const responseText =
     message.content[0].type === "text" ? message.content[0].text : "";
 
-  // Extract JSON
+  // Extract JSON — handles both raw JSON and code-fenced JSON
   const jsonMatch =
     responseText.match(/```json\n?([\s\S]*?)\n?```/) ||
     responseText.match(/\{[\s\S]*\}/);

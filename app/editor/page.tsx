@@ -10,7 +10,9 @@ import { ElegantTemplate } from "@/components/templates/ElegantTemplate";
 import { GradientTemplate } from "@/components/templates/GradientTemplate";
 import { TechTemplate } from "@/components/templates/TechTemplate";
 import { WarmTemplate } from "@/components/templates/WarmTemplate";
-import { TemplateSelector } from "@/components/ui/TemplateSelector";
+import { EditorialTemplate } from "@/components/templates/EditorialTemplate";
+import { LuxuryTemplate } from "@/components/templates/LuxuryTemplate";
+import { TemplateGalleryButton } from "@/components/ui/TemplateGallery";
 import { BrandingPanel } from "@/components/ui/BrandingPanel";
 import { EditPanel } from "@/components/ui/EditPanel";
 import { SocialPanel } from "@/components/social/SocialPanel";
@@ -22,6 +24,13 @@ import { SectionManager } from "@/components/ui/SectionManager";
 import { ImagePicker } from "@/components/ui/ImagePicker";
 import { ImageSwapContext } from "@/lib/context/ImageSwapContext";
 import { EbookSection, EbookContent } from "@/lib/templates/types";
+import { useMultiStepGenerator, GenerationProgressBar } from "@/lib/ai/multiStepGenerator";
+import { useAutoSave, AutoSaveIndicator } from "@/lib/hooks/useAutoSave";
+import { ComponentLibrary } from "@/components/editor/ComponentLibrary";
+import { AIAssistPanel } from "@/components/editor/AIAssistPanel";
+import { CanvasEditor } from "@/components/editor/CanvasEditor";
+import { ExportHub } from "@/components/ui/ExportHub";
+import { FormatSelector } from "@/components/ui/FormatSelector";
 
 const DRAFT_KEY = "pagesmith_draft";
 
@@ -46,6 +55,7 @@ export default function EditorPage() {
   const [outline, setOutline] = useState("");
   const [loading, setLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
+  const { progress, generate: multiGenerate, reset: resetGenerator } = useMultiStepGenerator();
   const [error, setError] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("minimal");
   const [exporting, setExporting] = useState(false);
@@ -60,7 +70,20 @@ export default function EditorPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string; sectionTitle?: string; sectionContent?: string } | null>(null);
   const [previewDark, setPreviewDark] = useState(false);
-  
+  // Phase 5 state
+  const [sidebarTab, setSidebarTab] = useState<"edit" | "ai" | "components">("edit");
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
+  // Phase 6: Format preset
+  const [formatPreset, setFormatPreset] = useState<string>("ebook");
+
+  // Auto-save
+  const { status: autoSaveStatus, lastSaved: autoSaveLastSaved } = useAutoSave({
+    key: "pagesmith_autosave",
+    value: generatedContent,
+    enabled: !!generatedContent,
+    debounceMs: 5000,
+  });
+
   // Project save/load
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [currentProjectName, setCurrentProjectName] = useState<string>("");
@@ -88,7 +111,7 @@ export default function EditorPage() {
         if (!response.ok) throw new Error("Project not found");
 
         const { project } = await response.json();
-        
+
         setCurrentProjectId(project.id);
         setCurrentProjectName(project.name);
         setSelectedTemplate(project.template || "minimal");
@@ -150,70 +173,28 @@ export default function EditorPage() {
     setError("");
     setGeneratedContent(null);
     setShowEdit(false);
+    resetGenerator();
 
     try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          topic: topic.trim(),
-          outline: outline.trim() || undefined,
-          sections: 5,
-          brandVoice: brandConfig.brandVoice?.trim() || undefined,
-          targetPersona: brandConfig.targetPersona?.trim() || undefined,
-        }),
+      const result = await multiGenerate({
+        topic: topic.trim(),
+        outline: outline.trim() || undefined,
+        sections: 6,
+        brandVoice: brandConfig.brandVoice?.trim() || undefined,
+        targetPersona: brandConfig.targetPersona?.trim() || undefined,
+        author: author.trim() || undefined,
+        subtitle: subtitle.trim() || undefined,
       });
 
-      if (!response.ok) throw new Error("Failed to generate content");
-
-      const data = await response.json();
-
-      const sectionsWithImages = await Promise.all(
-        data.sections.map(async (section: EbookSection) => {
-          if (!section.imageKeywords?.length) return section;
-
-          // Fetch up to 3 images (one per keyword)
-          const keywordsToFetch = section.imageKeywords.slice(0, 3);
-          const imageResults = await Promise.all(
-            keywordsToFetch.map(async (kw: string) => {
-              try {
-                const res = await fetch(`/api/images?query=${encodeURIComponent(kw)}&count=1`);
-                if (!res.ok) return null;
-                const data = await res.json();
-                return data.images?.[0] ?? null;
-              } catch { return null; }
-            })
-          );
-
-          const fetchedImages = imageResults.filter(Boolean);
-          return {
-            ...section,
-            images: fetchedImages,
-            image: fetchedImages[0] ?? undefined, // backward compat
-          };
-        })
-      );
-
-      // Fetch cover image
-      let coverImage = undefined;
-      const coverKeyword = data.coverImageKeyword || topic;
-      try {
-        const coverRes = await fetch(`/api/images?query=${encodeURIComponent(coverKeyword)}&count=1`);
-        if (coverRes.ok) {
-          const coverData = await coverRes.json();
-          coverImage = coverData.images?.[0] ?? undefined;
-        }
-      } catch { }
-
-      const result = {
-        ...data,
-        sections: sectionsWithImages,
-        subtitle: subtitle.trim() || undefined,
+      // Merge author/subtitle into result
+      const finalContent = {
+        ...result,
         author: author.trim() || undefined,
-        coverImage,
-      };
-      setGeneratedContent(result);
-      saveDraft(result);
+        subtitle: subtitle.trim() || result.subtitle,
+      } as GeneratedContent;
+
+      setGeneratedContent(finalContent);
+      saveDraft(finalContent);
     } catch (err) {
       setError("Failed to generate content. Please try again.");
       console.error(err);
@@ -274,7 +255,7 @@ export default function EditorPage() {
         });
 
         if (!response.ok) throw new Error("Failed to update project");
-        
+
         setCurrentProjectName(name);
         alert("Project updated successfully!");
       } else {
@@ -373,6 +354,8 @@ export default function EditorPage() {
       case "elegant": return <ElegantTemplate content={generatedContent} config={effectiveConfig} />;
       case "gradient": return <GradientTemplate content={generatedContent} config={effectiveConfig} />;
       case "tech": return <TechTemplate content={generatedContent} config={effectiveConfig} />;
+      case "editorial": return <EditorialTemplate content={generatedContent} config={effectiveConfig} />;
+      case "luxury": return <LuxuryTemplate content={generatedContent} config={effectiveConfig} />;
       case "warm": return <WarmTemplate content={generatedContent} config={effectiveConfig} />;
       default: return <MinimalTemplate content={generatedContent} config={effectiveConfig} />;
     }
@@ -409,7 +392,15 @@ export default function EditorPage() {
           {/* Input Panel */}
           <div className="lg:col-span-1 space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-1.5 text-gray-900">Topic</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-gray-900">Topic</label>
+                <FormatSelector
+                  value={formatPreset}
+                  onChange={(id, preset) => {
+                    setFormatPreset(id);
+                  }}
+                />
+              </div>
               <input
                 type="text"
                 value={topic}
@@ -460,7 +451,7 @@ export default function EditorPage() {
               </div>
             </div>
 
-            <TemplateSelector
+            <TemplateGalleryButton
               selectedTemplate={selectedTemplate}
               onSelectTemplate={setSelectedTemplate}
             />
@@ -488,42 +479,102 @@ export default function EditorPage() {
 
             {generatedContent && (
               <>
-                {/* Edit toggle */}
-                <button
-                  onClick={() => setShowEdit((v) => !v)}
-                  className="w-full py-2 text-sm border border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-amber-400 hover:text-amber-600 transition-colors"
-                >
-                  {showEdit ? "✕ Close Editor" : "✏️ Edit Content"}
-                </button>
+                {/* ── Phase 5 tabbed sidebar ─────────────────────── */}
+                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                  {/* Tabs */}
+                  <div className="flex border-b border-gray-100">
+                    {([
+                      { id: "edit", label: "✏️ Edit", title: "Edit content & sections" },
+                      { id: "ai", label: "✦ AI", title: "AI Assist" },
+                      { id: "components", label: "⊞ Library", title: "Component Library" },
+                    ] as const).map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setSidebarTab(tab.id)}
+                        title={tab.title}
+                        className="flex-1 py-2.5 text-xs font-semibold transition-all"
+                        style={{
+                          backgroundColor: sidebarTab === tab.id ? effectiveConfig.colors.accent + "15" : "white",
+                          color: sidebarTab === tab.id ? effectiveConfig.colors.accent : "#6b7280",
+                          borderBottom: sidebarTab === tab.id ? `2px solid ${effectiveConfig.colors.accent}` : "2px solid transparent",
+                        }}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
 
-                {showEdit && (
-                  <EditPanel content={generatedContent} onChange={handleContentChange} />
-                )}
+                  {/* Edit tab */}
+                  {sidebarTab === "edit" && (
+                    <div className="p-3 space-y-3 max-h-80 overflow-y-auto">
+                      <EditPanel content={generatedContent} onChange={handleContentChange} />
+                      <SectionManager
+                        sections={generatedContent.sections as never[]}
+                        onChange={(newSections) =>
+                          handleContentChange({ ...generatedContent, sections: newSections as never })
+                        }
+                        config={effectiveConfig}
+                      />
+                    </div>
+                  )}
 
-                {/* Section reorder + layout override */}
-                <SectionManager
-                  sections={generatedContent.sections as never[]}
-                  onChange={(newSections) =>
-                    handleContentChange({ ...generatedContent, sections: newSections as never })
-                  }
+                  {/* AI Assist tab */}
+                  {sidebarTab === "ai" && generatedContent.sections.length > 0 && (
+                    <div className="p-3 space-y-3">
+                      {/* Section picker */}
+                      <div>
+                        <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Target Section</label>
+                        <select
+                          value={activeSectionIndex}
+                          onChange={e => setActiveSectionIndex(Number(e.target.value))}
+                          className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 bg-white focus:outline-none focus:ring-2"
+                        >
+                          {generatedContent.sections.map((s: EbookSection, i: number) => (
+                            <option key={i} value={i}>{i + 1}. {s.title}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <AIAssistPanel
+                        section={generatedContent.sections[activeSectionIndex] as EbookSection}
+                        sectionIndex={activeSectionIndex}
+                        allSections={generatedContent.sections as EbookSection[]}
+                        config={effectiveConfig}
+                        ebookTitle={generatedContent.title}
+                        onUpdateSection={(idx, updated) => {
+                          const newSections = generatedContent.sections.map((s: EbookSection, i: number) => i === idx ? updated : s);
+                          handleContentChange({ ...generatedContent, sections: newSections });
+                        }}
+                        onUpdateAllSections={(sections) => {
+                          handleContentChange({ ...generatedContent, sections });
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Component Library tab */}
+                  {sidebarTab === "components" && (
+                    <div className="p-3">
+                      <ComponentLibrary
+                        config={effectiveConfig}
+                        onInsertSection={(newSection) => {
+                          const updated = [...generatedContent.sections, { ...newSection, title: newSection.title || "New Section" }];
+                          handleContentChange({ ...generatedContent, sections: updated });
+                          setSidebarTab("edit");
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Export Hub — replaces individual export buttons */}
+                <ExportHub
+                  content={generatedContent}
                   config={effectiveConfig}
+                  selectedTemplate={selectedTemplate}
+                  brandConfig={brandConfig}
+                  onExportPPTX={handleExportPPTX}
+                  exportingPPTX={exportingPPTX}
                 />
-
-                <button
-                  onClick={handleExportPDF}
-                  disabled={exporting}
-                  className="w-full px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {exporting ? "Exporting..." : "📄 Export as PDF"}
-                </button>
-
-                <button
-                  onClick={handleExportPPTX}
-                  disabled={exportingPPTX}
-                  className="w-full px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {exportingPPTX ? "Exporting..." : "📊 Export as PowerPoint"}
-                </button>
 
                 <button
                   onClick={handleShare}
@@ -551,7 +602,7 @@ export default function EditorPage() {
           </div>
 
           {shareUrl && <ShareModal url={shareUrl} onClose={() => setShareUrl(null)} />}
-          
+
           {showSaveModal && (
             <SaveProjectModal
               currentName={currentProjectName || generatedContent?.title}
@@ -572,48 +623,60 @@ export default function EditorPage() {
               onClose={() => setImagePicker(null)}
             />
           )}
-          {/* Preview Panel */}
+          {/* Preview Panel — wrapped in CanvasEditor */}
           <div
             className="lg:col-span-2 border border-gray-300 rounded-lg bg-white overflow-auto"
             style={{ maxHeight: "calc(100vh - 160px)" }}
           >
-            {/* Preview toolbar */}
-            {generatedContent && (
-              <div className="sticky top-0 z-10 flex justify-end px-3 py-2 bg-white/80 backdrop-blur border-b border-gray-100">
-                <button
-                  onClick={() => setPreviewDark((d) => !d)}
-                  className="text-xs px-3 py-1.5 rounded-full border font-medium transition-all"
-                  style={{ borderColor: previewDark ? "#6d28d9" : "#e5e7eb", color: previewDark ? "#7c3aed" : "#6b7280", backgroundColor: previewDark ? "#7c3aed15" : "transparent" }}
-                >
-                  {previewDark ? "☀️ Light mode" : "🌙 Dark preview"}
-                </button>
-              </div>
-            )}
-            {!generatedContent && !loading && (
+            {generatedContent ? (
+              <CanvasEditor config={effectiveConfig}>
+                {/* Original preview toolbar inside canvas */}
+                <div className="sticky top-0 z-10 flex items-center justify-between px-3 py-2 bg-white/80 backdrop-blur border-b border-gray-100">
+                  <AutoSaveIndicator status={autoSaveStatus} lastSaved={autoSaveLastSaved} />
+                  <button
+                    onClick={() => setPreviewDark((d) => !d)}
+                    className="text-xs px-3 py-1.5 rounded-full border font-medium transition-all"
+                    style={{ borderColor: previewDark ? "#6d28d9" : "#e5e7eb", color: previewDark ? "#7c3aed" : "#6b7280", backgroundColor: previewDark ? "#7c3aed15" : "transparent" }}
+                  >
+                    {previewDark ? "☀️ Light mode" : "🌙 Dark preview"}
+                  </button>
+                </div>
+                {!generatedContent && !loading && (
+                  <div className="p-12 text-center">
+                    <p className="text-gray-400 text-lg">✦</p>
+                    <p className="text-gray-500 mt-2">
+                      Your ebook preview will appear here
+                    </p>
+                  </div>
+                )}
+
+                {loading && (
+                  <div className="flex flex-col items-center justify-center py-12 px-8">
+                    <div className="w-full max-w-sm space-y-5">
+                      <div className="text-center">
+                        <div className="text-3xl mb-2">✦</div>
+                        <p className="font-semibold text-gray-700">Generating your ebook</p>
+                        <p className="text-sm text-gray-400 mt-1">Using multi-step AI generation</p>
+                      </div>
+                      <GenerationProgressBar progress={progress} />
+                    </div>
+                  </div>
+                )}
+
+                <ImageSwapContext.Provider value={{
+                  onImageClick: (si, ii, kw) => {
+                    const section = generatedContent?.sections[si];
+                    setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw, sectionTitle: section?.title, sectionContent: section?.content });
+                  },
+                }}>
+                  <div className="bg-gray-100" style={previewDark ? { filter: "invert(1) hue-rotate(180deg)" } : {}}>{renderTemplate()}</div>
+                </ImageSwapContext.Provider>
+              </CanvasEditor>
+            ) : (
               <div className="p-12 text-center">
                 <p className="text-gray-400 text-lg">✦</p>
-                <p className="text-gray-500 mt-2">
-                  Your ebook preview will appear here
-                </p>
+                <p className="text-gray-500 mt-2">Your ebook preview will appear here</p>
               </div>
-            )}
-
-            {loading && (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4" />
-                <p className="text-gray-600">Generating your ebook...</p>
-              </div>
-            )}
-
-            {generatedContent && (
-              <ImageSwapContext.Provider value={{
-                onImageClick: (si, ii, kw) => {
-                  const section = generatedContent?.sections[si];
-                  setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw, sectionTitle: section?.title, sectionContent: section?.content });
-                },
-              }}>
-                <div className="bg-gray-100" style={previewDark ? { filter: "invert(1) hue-rotate(180deg)" } : {}}>{renderTemplate()}</div>
-              </ImageSwapContext.Provider>
             )}
           </div>
         </div>
