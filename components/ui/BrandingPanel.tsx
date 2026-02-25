@@ -174,7 +174,6 @@ export function BrandingPanel({ brand, onChange, topic, selectedTemplate }: Bran
 
                     {/* Color Pickers */}
                     <div>
-
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Colors</p>
                         <div className="grid grid-cols-5 gap-2">
                             {colorFields.map(({ key, label }) => (
@@ -192,27 +191,61 @@ export function BrandingPanel({ brand, onChange, topic, selectedTemplate }: Bran
                                             style={{ backgroundColor: (brand[key] as string) || "#e5e7eb" }}
                                         />
                                     </div>
-                                    <span className="text-xs text-gray-500">{label}</span>
+                                    <span className="text-[9px] text-gray-500 leading-none">{label}</span>
+                                    {/* Hex text input */}
+                                    <input
+                                        type="text"
+                                        value={(brand[key] as string) || ""}
+                                        onChange={(e) => {
+                                            const v = e.target.value;
+                                            if (/^#[0-9a-fA-F]{0,6}$/.test(v)) update(key, v);
+                                        }}
+                                        maxLength={7}
+                                        placeholder="#hex"
+                                        className="w-full text-[9px] text-center border border-gray-200 rounded px-0.5 py-0.5 bg-transparent text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400 font-mono"
+                                    />
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Font Selector */}
+                    {/* Font Selector + AI Pairing */}
                     <div>
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Font</p>
-                        <select
-                            value={brand.fontFamily}
-                            onChange={(e) => update("fontFamily", e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="">— Template Default —</option>
-                            {GOOGLE_FONTS.map((font) => (
-                                <option key={font.value} value={font.value}>
-                                    {font.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="flex gap-2">
+                            <select
+                                value={brand.fontFamily}
+                                onChange={(e) => update("fontFamily", e.target.value)}
+                                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="">— Template Default —</option>
+                                {GOOGLE_FONTS.map((font) => (
+                                    <option key={font.value} value={font.value}>
+                                        {font.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {topic && (
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const res = await fetch("/api/font-pairing", {
+                                                method: "POST",
+                                                headers: { "Content-Type": "application/json" },
+                                                body: JSON.stringify({ topic }),
+                                            });
+                                            if (!res.ok) throw new Error();
+                                            const data = await res.json();
+                                            update("fontFamily", data.fontFamily);
+                                        } catch { /* silent fallback */ }
+                                    }}
+                                    className="px-3 py-2 rounded-lg text-xs font-bold border border-purple-200 text-purple-600 hover:bg-purple-50 transition-all flex-shrink-0"
+                                    title="AI picks the best font pair for your topic"
+                                >
+                                    ✨ AI Font
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Logo Upload */}
