@@ -1,6 +1,6 @@
 # PageSmith - Status Tracker
 
-**Last Updated:** 2026-02-24 by SignalShip
+**Last Updated:** 2026-02-24 19:30 by SignalShip
 **Rule:** When you complete a task, check it off and add your name + date.
 
 ---
@@ -40,10 +40,15 @@
 - [x] All templates support PDF export — *SignalShip, Feb 24*
 - [x] Export button + download — *SignalShip, Feb 24*
 
-## ⏳ Phase 6: Sharing & URLs
+## ✅ Phase 6: Sharing & URLs — COMPLETE
 - [x] Upstash Redis for shareable URLs — *Skylar, Feb 24*
-- [ ] Share link generation
-- [ ] Public ebook viewer
+- [x] Share link generation — *Antigravity, Feb 24*
+- [x] Public ebook viewer — *Antigravity, Feb 24*
+- [x] Project Library (save/load/browse) — *SignalShip, Feb 24*
+  - [x] Redis storage for saved projects
+  - [x] My Projects page
+  - [x] Save/Update button in editor
+  - [x] Load project from URL
 
 ## 🎨 Phase 11: Excalidraw Infographics (Future)
 - [ ] Excalidraw React component integration
@@ -65,7 +70,7 @@
 
 | Item | Waiting On | Since |
 |------|-----------|-------|
-| (none) | — | — |
+| PowerPoint export build | Fix pptxgenjs node: scheme error in Next.js | Feb 24 |
 
 ---
 
