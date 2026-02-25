@@ -54,6 +54,24 @@ export interface ComparisonTableData {
   highlightCol?: number;
 }
 
+export interface IconGridItem {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+export interface IconGridData {
+  title?: string;
+  columns?: 2 | 3 | 4;
+  items: IconGridItem[];
+}
+
+export interface ChapterDividerData {
+  chapterNumber: number;
+  title: string;
+  subtitle?: string;
+}
+
 export interface EbookSection {
   title: string;
   content: string;
@@ -66,6 +84,9 @@ export interface EbookSection {
   chart?: ChartData;
   diagram?: DiagramData;
   comparisonTable?: ComparisonTableData;
+  iconGrid?: IconGridData;
+  /** If set, renders a chapter divider BEFORE this section */
+  chapterDivider?: ChapterDividerData;
   /** Legacy single image (kept for backward compat) */
   image?: ImageAsset;
   /** Multiple images (new) */

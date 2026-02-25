@@ -3,6 +3,7 @@ import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import { VizRenderer } from "@/components/charts/VizRenderer";
 import { useImageSwap } from "@/lib/context/ImageSwapContext";
+import { ChapterDivider } from "@/components/sections/ChapterDivider";
 
 interface SectionRendererProps {
     section: EbookSection;
@@ -192,17 +193,32 @@ export function SectionRenderer({ section, config, index, onImageClick: onImageC
             {section.callout && (
                 <CalloutBox type={section.callout.type} text={section.callout.text} config={config} />
             )}
-            {(section.chart || section.diagram || section.comparisonTable) && (
-                <VizRenderer chart={section.chart} diagram={section.diagram} comparisonTable={section.comparisonTable} config={config} />
+            {(section.chart || section.diagram || section.comparisonTable || section.iconGrid) && (
+                <VizRenderer chart={section.chart} diagram={section.diagram} comparisonTable={section.comparisonTable} iconGrid={section.iconGrid} config={config} />
             )}
         </>
     );
 
+    // Chapter divider (renders before the section content if configured)
+    const MaybeChapterDivider = section.chapterDivider ? (
+        <ChapterDivider
+            chapterNumber={section.chapterDivider.chapterNumber}
+            title={section.chapterDivider.title}
+            subtitle={section.chapterDivider.subtitle}
+            config={config}
+            imageUrl={images[0]?.url}
+        />
+    ) : null;
+
     // ── Layout variants ───────────────────────────────────
+
+    // Helper to wrap any layout with an optional chapter divider
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const withDivider = (content: React.ReactNode) => MaybeChapterDivider ? <>{MaybeChapterDivider}{content}</> : <>{content}</>;
 
     // TEXT ONLY
     if (layout === "text-only" || images.length === 0) {
-        return (
+        return withDivider(
             <div className="mb-12 px-10 py-8" style={{ backgroundColor: config.colors.background }}>
                 {SectionHeading}
                 {BodyText}

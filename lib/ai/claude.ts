@@ -110,7 +110,9 @@ Rules:
 - NEVER include both chart and diagram on the same section
 - chart and diagram data must be realistic, specific, and relevant to the content — not generic placeholders
 - comparisonTable: include on at most 1 section where comparing 2-4 options/tools/approaches adds value (e.g. pricing tiers, feature comparison, approach tradeoffs). Format: headers = column names (2-4), rows = [{feature, values: [one per column]}]. Set highlightCol to the index (0-based) of the recommended/winner column. Values can be plain text, "Yes"/"No", or a percentage. Omit if not genuinely useful.
-- NEVER include comparisonTable on the same section as chart or diagram`;
+- NEVER include comparisonTable on the same section as chart or diagram
+- iconGrid: include on 1-2 sections where listing 4-8 discrete concepts, tools, strategies, or features as icon+title+description cards makes more impact than prose. Each item needs: icon (Lucide name), title (3-6 words), description (1-2 sentences). Use columns: 2 or 3 or 4. Omit if everything fits in body text.
+- chapterDivider: optionally include on 1-2 sections to mark a major theme shift (e.g., midpoint, second half). Format: chapterNumber (sequential), title (the section's theme), subtitle (1 sentence teaser). Never on the first or last section. Omit on most sections.`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
