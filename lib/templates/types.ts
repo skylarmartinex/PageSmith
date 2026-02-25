@@ -93,6 +93,10 @@ export interface BrandConfig {
   textColor: string;
   fontFamily: string;
   logoUrl: string;
+  /** 2-5 sentences in the brand's voice — Claude will match the style */
+  brandVoice?: string;
+  /** Target reader persona — Claude writes for this audience */
+  targetPersona?: string;
 }
 
 export interface BrandPreset {

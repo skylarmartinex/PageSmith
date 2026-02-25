@@ -17,25 +17,15 @@ import { TEMPLATES, BrandConfig, DEFAULT_BRAND, applyBrandToConfig } from "@/lib
 import { exportToPPTX } from "@/lib/export/pptx";
 import { ShareModal } from "@/components/ui/ShareModal";
 import { SectionManager } from "@/components/ui/SectionManager";
+import { ImagePicker } from "@/components/ui/ImagePicker";
+import { ImageSwapContext } from "@/lib/context/ImageSwapContext";
+import { EbookSection, EbookContent } from "@/lib/templates/types";
 
 const DRAFT_KEY = "pagesmith_draft";
 
-interface EbookSection {
-  title: string;
-  content: string;
-  imageKeywords: string[];
-  image?: {
-    url: string;
-    thumb: string;
-    alt: string;
-    attribution: string;
-  };
-}
-
-interface GeneratedContent {
-  title: string;
-  sections: EbookSection[];
-}
+// GeneratedContent extends EbookContent with the raw AI field
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GeneratedContent = EbookContent & { coverImageKeyword?: string; sections: any[] };
 
 interface Draft {
   topic: string;
@@ -63,6 +53,7 @@ export default function EditorPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string } | null>(null);
 
   // Check for saved draft on mount
   useEffect(() => {
@@ -131,6 +122,8 @@ export default function EditorPage() {
           topic: topic.trim(),
           outline: outline.trim() || undefined,
           sections: 5,
+          brandVoice: brandConfig.brandVoice?.trim() || undefined,
+          targetPersona: brandConfig.targetPersona?.trim() || undefined,
         }),
       });
 
@@ -212,6 +205,18 @@ export default function EditorPage() {
     } finally {
       setExportingPPTX(false);
     }
+  };
+
+  const handleImageSwap = (sectionIdx: number, imageIdx: number, newImg: { url: string; thumb: string; alt: string; attribution: string }) => {
+    if (!generatedContent) return;
+    const sections = generatedContent.sections.map((section, si) => {
+      if (si !== sectionIdx) return section;
+      const images = [...(section.images || (section.image ? [section.image] : []))];
+      images[imageIdx] = newImg;
+      return { ...section, images, image: imageIdx === 0 ? newImg : section.image };
+    });
+    const updated = { ...generatedContent, sections };
+    handleContentChange(updated);
   };
 
   const handleShare = async () => {
@@ -456,6 +461,16 @@ export default function EditorPage() {
 
           {shareUrl && <ShareModal url={shareUrl} onClose={() => setShareUrl(null)} />}
 
+          {imagePicker && (
+            <ImagePicker
+              initialQuery={imagePicker.keyword}
+              onSelect={(img) => {
+                handleImageSwap(imagePicker.sectionIdx, imagePicker.imageIdx, img);
+                setImagePicker(null);
+              }}
+              onClose={() => setImagePicker(null)}
+            />
+          )}
           {/* Preview Panel */}
           <div
             className="lg:col-span-2 border border-gray-300 rounded-lg bg-white overflow-auto"
@@ -478,7 +493,11 @@ export default function EditorPage() {
             )}
 
             {generatedContent && (
-              <div className="bg-gray-100">{renderTemplate()}</div>
+              <ImageSwapContext.Provider value={{
+                onImageClick: (si, ii, kw) => setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw }),
+              }}>
+                <div className="bg-gray-100">{renderTemplate()}</div>
+              </ImageSwapContext.Provider>
             )}
           </div>
         </div>

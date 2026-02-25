@@ -9,12 +9,14 @@ export interface GenerateContentRequest {
   topic: string;
   outline?: string;
   sections?: number;
+  brandVoice?: string;
+  targetPersona?: string;
 }
 
 export async function generateEbookContent(
   request: GenerateContentRequest
 ) {
-  const { topic, outline, sections = 5 } = request;
+  const { topic, outline, sections = 5, brandVoice, targetPersona } = request;
 
   const layoutTypes = ["text-only", "image-right", "image-left", "image-full", "image-grid", "image-overlay"];
   const lucideIcons = [
@@ -29,7 +31,9 @@ key statistics, and actionable callout boxes. Always return valid JSON only — 
 
 IMPORTANT: When research context is provided below, actively use those real statistics and facts in your content. 
 Cite sources naturally (e.g., "According to [Source], ..."). 
-Make your content credible and specific — not generic.`;
+Make your content credible and specific — not generic.
+${targetPersona ? `\nTARGET AUDIENCE: Write specifically for ${targetPersona}. Use vocabulary, examples, and depth appropriate for this audience. Every section should speak directly to their challenges and goals.` : ""}
+${brandVoice ? `\nBRAND VOICE: Match the tone, vocabulary, and style of the following example text throughout the entire ebook. Do not copy the content, only match the voice:\n---\n${brandVoice}\n---` : ""}`;
 
   // Fetch real research context from Exa (best-effort, won't block if unavailable)
   let researchContext = "";

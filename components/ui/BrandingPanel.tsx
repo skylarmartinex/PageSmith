@@ -316,6 +316,44 @@ export function BrandingPanel({ brand, onChange, topic, selectedTemplate }: Bran
                                 </button>
                             </div>
                         )}
+
+                        {/* Brand Voice */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                ✍️ Brand Voice
+                                <span className="text-gray-400 font-normal ml-1">(optional)</span>
+                            </label>
+                            <textarea
+                                value={brand.brandVoice || ""}
+                                onChange={(e) => onChange({ ...brand, brandVoice: e.target.value })}
+                                placeholder="Paste 2-5 sentences written in your brand voice. Claude will match your style throughout the ebook."
+                                rows={3}
+                                className="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 resize-none"
+                            />
+                        </div>
+
+                        {/* Target Persona */}
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                🎯 Write for
+                            </label>
+                            <select
+                                value={brand.targetPersona || ""}
+                                onChange={(e) => onChange({ ...brand, targetPersona: e.target.value })}
+                                className="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">General audience</option>
+                                <option value="C-suite executives (CEO, CFO, COO)">C-suite executives</option>
+                                <option value="small business owners and solopreneurs">Small business owners</option>
+                                <option value="marketing professionals and growth teams">Marketing professionals</option>
+                                <option value="software engineers and technical teams">Software engineers</option>
+                                <option value="sales professionals and account executives">Sales professionals</option>
+                                <option value="HR and people operations leaders">HR & People Ops</option>
+                                <option value="entrepreneurs and startup founders">Startup founders</option>
+                                <option value="general consumers learning for personal growth">Personal growth readers</option>
+                            </select>
+                        </div>
+
                     </div>
                 </div>
             )}

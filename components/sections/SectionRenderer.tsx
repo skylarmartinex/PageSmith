@@ -2,11 +2,14 @@ import { EbookSection, TemplateConfig, SectionLayout } from "@/lib/templates/typ
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
 import { VizRenderer } from "@/components/charts/VizRenderer";
+import { useImageSwap } from "@/lib/context/ImageSwapContext";
 
 interface SectionRendererProps {
     section: EbookSection;
     config: TemplateConfig;
     index: number;
+    /** Called with (sectionIndex, imageIndex) when user clicks an image to swap it */
+    onImageClick?: (sectionIndex: number, imageIndex: number, keyword: string) => void;
 }
 
 // Safely resolve a Lucide icon by name
@@ -113,13 +116,39 @@ function ImageAttrib({ text, light }: { text: string; light?: boolean }) {
     );
 }
 
-export function SectionRenderer({ section, config, index }: SectionRendererProps) {
+export function SectionRenderer({ section, config, index, onImageClick: onImageClickProp }: SectionRendererProps) {
+    const { onImageClick: ctxImageClick } = useImageSwap();
+    const onImageClick = onImageClickProp ?? ctxImageClick ?? undefined;
     const layout: SectionLayout = section.layoutType || "image-right";
     const images = section.images && section.images.length > 0
         ? section.images
         : section.image
             ? [section.image]
             : [];
+
+    // Clickable image wrapper — shows swap overlay on hover
+    const SwappableImage = ({ img, imgIdx, className, style }: {
+        img: { url: string; alt: string; attribution?: string };
+        imgIdx: number;
+        className?: string;
+        style?: React.CSSProperties;
+    }) => (
+        <div
+            className="relative group"
+            style={{ cursor: onImageClick ? "pointer" : "default" }}
+            onClick={() => onImageClick?.(index, imgIdx, section.imageKeywords?.[imgIdx] || section.title)}
+        >
+            <img src={img.url} alt={img.alt} className={className} style={style} />
+            {onImageClick && (
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-all text-white text-xs font-bold bg-black/60 px-3 py-1.5 rounded-xl">
+                        🔄 Swap image
+                    </span>
+                </div>
+            )}
+        </div>
+    );
+
 
     // Shared section heading
     const SectionHeading = (
