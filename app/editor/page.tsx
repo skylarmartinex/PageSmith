@@ -53,7 +53,7 @@ export default function EditorPage() {
   const [showEdit, setShowEdit] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
-  const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string } | null>(null);
+  const [imagePicker, setImagePicker] = useState<{ sectionIdx: number; imageIdx: number; keyword: string; sectionTitle?: string; sectionContent?: string } | null>(null);
   const [previewDark, setPreviewDark] = useState(false);
 
   // Check for saved draft on mount
@@ -465,6 +465,8 @@ export default function EditorPage() {
           {imagePicker && (
             <ImagePicker
               initialQuery={imagePicker.keyword}
+              sectionTitle={imagePicker.sectionTitle}
+              sectionSummary={imagePicker.sectionContent?.slice(0, 200)}
               onSelect={(img) => {
                 handleImageSwap(imagePicker.sectionIdx, imagePicker.imageIdx, img);
                 setImagePicker(null);
@@ -507,7 +509,10 @@ export default function EditorPage() {
 
             {generatedContent && (
               <ImageSwapContext.Provider value={{
-                onImageClick: (si, ii, kw) => setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw }),
+                onImageClick: (si, ii, kw) => {
+                  const section = generatedContent?.sections[si];
+                  setImagePicker({ sectionIdx: si, imageIdx: ii, keyword: kw, sectionTitle: section?.title, sectionContent: section?.content });
+                },
               }}>
                 <div className="bg-gray-100" style={previewDark ? { filter: "invert(1) hue-rotate(180deg)" } : {}}>{renderTemplate()}</div>
               </ImageSwapContext.Provider>
