@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { EbookContent, TemplateConfig } from "@/lib/templates/types";
 import { TableOfContents } from "@/components/sections/TableOfContents";
 import { SectionRenderer } from "@/components/sections/SectionRenderer";
+import { LeadCapturePage } from "@/components/sections/LeadCapturePage";
 
 interface ShareViewProps {
     content: EbookContent;
@@ -238,6 +239,11 @@ export function ShareView({ content, config }: ShareViewProps) {
                             </AnimatedSection>
                         </div>
                     ))}
+                </div>
+
+                {/* Lead capture CTA */}
+                <div className="max-w-4xl mx-auto">
+                    <LeadCapturePage content={content} config={config} />
                 </div>
 
                 {/* Footer */}

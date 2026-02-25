@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { researchTopic, formatResearchContext } from "@/lib/research/exa";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -24,7 +25,20 @@ export async function generateEbookContent(
 
   const systemPrompt = `You are an expert content strategist and ebook writer. 
 You create professional, visually rich ebooks with varied layouts, compelling pull quotes, 
-key statistics, and actionable callout boxes. Always return valid JSON only — no markdown, no explanation.`;
+key statistics, and actionable callout boxes. Always return valid JSON only — no markdown, no explanation.
+
+IMPORTANT: When research context is provided below, actively use those real statistics and facts in your content. 
+Cite sources naturally (e.g., "According to [Source], ..."). 
+Make your content credible and specific — not generic.`;
+
+  // Fetch real research context from Exa (best-effort, won't block if unavailable)
+  let researchContext = "";
+  try {
+    const facts = await researchTopic(topic);
+    researchContext = formatResearchContext(facts);
+  } catch {
+    // Exa not configured or unavailable — proceed without research
+  }
 
   const userPrompt = outline
     ? `Create a professional ebook about "${topic}" using this outline:\n\n${outline}\n\nGenerate ${sections} sections.`
@@ -99,7 +113,10 @@ Rules:
     messages: [
       {
         role: "user",
-        content: userPrompt + formatPrompt,
+        content: [
+          userPrompt + formatPrompt,
+          researchContext ? `\n\n${researchContext}` : "",
+        ].join(""),
       },
     ],
   });
