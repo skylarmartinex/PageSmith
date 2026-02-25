@@ -17,6 +17,31 @@ export interface SectionStat {
   value: string;
 }
 
+export interface ChartDataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+export interface ChartData {
+  type: "bar" | "line" | "pie" | "donut" | "progress";
+  title?: string;
+  unit?: string;
+  data: ChartDataPoint[];
+}
+
+export interface DiagramStep {
+  title: string;
+  description?: string;
+  date?: string;
+}
+
+export interface DiagramData {
+  type: "process" | "timeline";
+  title?: string;
+  steps: DiagramStep[];
+}
+
 export interface EbookSection {
   title: string;
   content: string;
@@ -26,6 +51,8 @@ export interface EbookSection {
   callout?: SectionCallout;
   stats?: SectionStat[];
   iconName?: string;
+  chart?: ChartData;
+  diagram?: DiagramData;
   /** Legacy single image (kept for backward compat) */
   image?: ImageAsset;
   /** Multiple images (new) */

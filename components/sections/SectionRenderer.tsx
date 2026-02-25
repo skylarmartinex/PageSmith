@@ -1,6 +1,7 @@
 import { EbookSection, TemplateConfig, SectionLayout } from "@/lib/templates/types";
 import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
+import { VizRenderer } from "@/components/charts/VizRenderer";
 
 interface SectionRendererProps {
     section: EbookSection;
@@ -161,6 +162,9 @@ export function SectionRenderer({ section, config, index }: SectionRendererProps
             )}
             {section.callout && (
                 <CalloutBox type={section.callout.type} text={section.callout.text} config={config} />
+            )}
+            {(section.chart || section.diagram) && (
+                <VizRenderer chart={section.chart} diagram={section.diagram} config={config} />
             )}
         </>
     );

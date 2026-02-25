@@ -58,6 +58,22 @@ Return ONLY this JSON structure (no markdown):
       "callout": {
         "type": "tip",
         "text": "A concise actionable tip, warning, or key insight in 1-2 sentences"
+      },
+      "chart": {
+        "type": "bar",
+        "title": "Chart title",
+        "unit": "%",
+        "data": [
+          { "label": "Category A", "value": 72 },
+          { "label": "Category B", "value": 45 }
+        ]
+      },
+      "diagram": {
+        "type": "process",
+        "title": "Diagram title",
+        "steps": [
+          { "title": "Step 1", "description": "Brief explanation", "date": "Optional date or phase" }
+        ]
       }
     }
   ]
@@ -65,12 +81,16 @@ Return ONLY this JSON structure (no markdown):
 
 Rules:
 - iconName must be one of: ${lucideIcons.join(", ")}
-- stats: include 1-3 real or illustrative statistics ONLY for sections where data adds value; omit otherwise (use null or omit the field)
-- callout.type: "tip" for best practices, "warning" for pitfalls, "insight" for aha moments; omit if nothing meaningful to add
+- stats: include 1-3 real or illustrative statistics ONLY for sections where data adds value; omit otherwise
+- callout.type: "tip" for best practices, "warning" for pitfalls, "insight" for aha moments; omit if nothing meaningful
 - pullQuote: always include — make it quotable and punchy
 - imageKeywords: always 3 distinct, specific keywords
-- layoutType: vary across sections; use "image-overlay" for 1-2 high-drama sections where a powerful image with text on top creates impact; never use it for the first or last section
-- coverImageKeyword: single highly visual keyword that represents the ebook topic perfectly`;
+- layoutType: vary across sections; use "image-overlay" for 1-2 high-drama sections; never use it for the first or last section
+- coverImageKeyword: single highly visual keyword that represents the ebook topic perfectly
+- chart: include on 1-3 sections where data comparisons, trends, distributions, or percentages add value. Types: "bar" (comparisons), "line" (trends over time), "pie" (distribution), "donut" (distribution with center space), "progress" (skill levels or completion rates). Omit chart if no data makes sense.
+- diagram: include on 1-2 sections where a step-by-step process ("process") or chronological milestones ("timeline") would clarify the concept. Omit diagram if not applicable.
+- NEVER include both chart and diagram on the same section
+- chart and diagram data must be realistic, specific, and relevant to the content — not generic placeholders`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
